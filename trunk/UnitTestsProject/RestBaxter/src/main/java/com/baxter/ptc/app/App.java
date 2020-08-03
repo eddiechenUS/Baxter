@@ -1,23 +1,20 @@
 package com.baxter.ptc.app;
 
-import static io.restassured.RestAssured.*;
-import static io.restassured.matcher.RestAssuredMatchers.*;
-import static org.hamcrest.Matchers.*;
-
 import java.util.ArrayList;
 import java.util.List;
 
 import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 
 import com.baxter.ptc.twx.TWXServicesInvoker;
 import com.baxter.ptc.twx.core.TWXConnectorPropeties;
-import com.baxter.ptc.twx.core.TWXCredentials;
+import com.baxter.ptc.twx.core.TWXServices;
 
 import io.restassured.RestAssured;
 import io.restassured.http.Header;
 import io.restassured.http.Headers;
 import io.restassured.response.Response;
-import io.restassured.specification.RequestSpecification;
 
 public class App {
 	public static void main(String [] args) {
@@ -46,6 +43,8 @@ public class App {
 		int statusCode1 = response1.getStatusCode();
 		System.out.println(statusCode1);
 		
+		
+	
 		//good example
 		JSONObject jsonBody = new JSONObject();
 		jsonBody.put("Num1", 3.0);
@@ -58,6 +57,14 @@ public class App {
 		int statusCode2 = response2.getStatusCode();
 		System.out.println(statusCode2);
 		
+		
+		System.out.println("getBaseUrl() ="+TWXConnectorPropeties.getBaseUrl());
+		System.out.println(".getPathForInvokeThingService ="+TWXConnectorPropeties.getPathForInvokeThingService("TestRest", "AddTwoNumbers"));
+		System.out.println(".getHeaders() ="+TWXConnectorPropeties.getHeaders());
+		
+
+		
+	
 		//best example
 		JSONObject body = new JSONObject();
 		body.put("Num1", 5.0);
@@ -73,6 +80,51 @@ public class App {
 		System.out.println(response4.getBody().asString());
 		int statusCode4 = response4.getStatusCode();
 		System.out.println(statusCode4);
+		
+		
+		System.out.println("TWX 5 TIME");
+		Response response5 = TWXServicesInvoker.post("Amia@AmiaTesting6", "GetPropertyValues");
+		System.out.println(response5.getBody().asString());
+		int statusCode5 = response5.getStatusCode();
+		System.out.println(statusCode5);
+		
+		TWXServices st = new TWXServices();
+		Response r1 = st.getThingProperties("Amia@AmiaTesting6");
+		System.out.println(r1.getBody().asString());
+		System.out.println(r1.getStatusCode());
+			
+		Response r2 = st.getThingProperty("Amia@AmiaTesting6","SettingsResponsePath");
+		System.out.println(r2.getBody().asString());
+		System.out.println(r2.getStatusCode());
+		
+		Response r3 = st.setProperty("Amia@AmiaTesting6", "language", "lllllllkk");
+		System.out.println(r3.getBody().asString());
+		System.out.println(r3.getStatusCode());
+		
+		
+		JSONObject jsonObject = new JSONObject();
+		//"{\"language\":\"uuuu\",\"shareKey\":\"ooo\"}"
+		JSONParser parser = new JSONParser();
+		try {
+			jsonObject = (JSONObject) parser.parse("{\"language\":\"ukkkuuu\",\"sharedKey\":\"ookkko\"}");
+			Response r4 = st.setMultipleProperty("Amia@AmiaTesting6", jsonObject);
+			System.out.println(r4.getBody().asString());
+			System.out.println(r4.getStatusCode());
+		} catch (ParseException e) {
+			e.printStackTrace();
+		}
+		
+		
+		Response r5 = st.registerAmiaDevice(556677);
+		System.out.println(r5.getBody().asString());
+		System.out.println(r5.getStatusCode());
+		
+		Response r6 = st.registerAmiaDevice(775566);
+		System.out.println(r6.getBody().asString());
+		System.out.println(r6.getStatusCode());
+		
+
+		
 		
 	}
 }
