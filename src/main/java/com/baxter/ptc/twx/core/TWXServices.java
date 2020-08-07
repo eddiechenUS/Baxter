@@ -34,7 +34,6 @@ public class TWXServices {
 		return responseT;
 	}
 
-
 	public Response setMultipleProperty(String ThingName, JSONObject body ) {
 		Response responseT = RestAssured.given().baseUri(TWXConnectorPropeties.getBaseUrl())
 				.basePath("Things/"+ThingName+"/Properties/*?Accept=application%2Fjson&Content-Type=application%2Fjson")
@@ -51,7 +50,6 @@ public class TWXServices {
 		return responseT;
 	}
 	
-	
 	public Response registerClariaDevice(Integer serialNumber) {
 		JSONObject jsonBody = new JSONObject();
 		jsonBody.put("serialNumber", serialNumber);
@@ -60,4 +58,5 @@ public class TWXServices {
 				.headers(TWXConnectorPropeties.getHeaders()).body(jsonBody.toJSONString()).post();
 		return responseT;
 	}
+	
 }
