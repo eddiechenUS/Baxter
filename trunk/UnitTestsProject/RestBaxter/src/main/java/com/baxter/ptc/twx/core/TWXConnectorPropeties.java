@@ -22,6 +22,10 @@ public class TWXConnectorPropeties {
 		return getHeaders(TWXCredentials.APP_KEY);
 	}
 	
+	public static Headers getClariaHeaders() {
+		return getHeaders(TWXCredentials.APP_KEY_CLARIA);
+	}
+	
 	public static String getPathForInvokeThingService(String thingName, String serviceName) {
 		return "Things/"+thingName+"/Services/"+serviceName;
 	}

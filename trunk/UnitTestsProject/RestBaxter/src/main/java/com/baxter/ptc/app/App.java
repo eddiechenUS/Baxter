@@ -9,6 +9,7 @@ import org.json.simple.parser.ParseException;
 
 import com.baxter.ptc.twx.TWXResultGetter;
 import com.baxter.ptc.twx.core.TWXConnectorPropeties;
+import com.baxter.ptc.twx.core.TWXServices;
 
 import io.restassured.RestAssured;
 import io.restassured.response.Response;
@@ -85,7 +86,7 @@ public class App {
 //		int statusCode5 = response5.getStatusCode();
 //		System.out.println(statusCode5);
 //		
-//		TWXServices st = new TWXServices();
+		TWXServices st = new TWXServices();
 		
 //		Response r1 = st.getThingProperties("Amia@AmiaTesting6");
 //		System.out.println(r1.getBody().asString());
@@ -120,7 +121,12 @@ public class App {
 //		Response r6 = st.registerAmiaDevice(775569);
 //		System.out.println(r6.getBody().asString());
 //		System.out.println(r6.getStatusCode());
+//		TWXResultGetter.distributor(TWXResultGetter.categorize(TWXResultGetter.showResult()));
 		
-		TWXResultGetter.distributor(TWXResultGetter.categorize(TWXResultGetter.showResult()));
+//		Response r6 = st.testResponse2();
+//		System.out.println(r6.getBody().asString());
+//		System.out.println(r6.getStatusCode());
+		
+		
 	}
 }
