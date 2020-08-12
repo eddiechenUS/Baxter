@@ -58,14 +58,14 @@ public class TWXServices {
 		return responseT;
 	}
 
-	public Response setClariaProperty2(String propertyName, String propertyValue, String ClariaDeviceName) {
-		JSONObject jsonBody = new JSONObject();
-//		jsonBody.put(propertyName, propertyValue);
-		Response responseT = RestAssured.given().baseUri(TWXConnectorPropeties.getBaseUrl())
-				.basePath("Things/" + ClariaDeviceName + "/Properties/" + propertyName)
-				.headers(TWXConnectorPropeties.getClariaHeaders()).body(jsonBody.toJSONString()).put();
-		return responseT;
-	}
+//	public Response setClariaProperty2(String propertyName, String propertyValue, String ClariaDeviceName) {
+//		JSONObject jsonBody = new JSONObject();
+////		jsonBody.put(propertyName, propertyValue);
+//		Response responseT = RestAssured.given().baseUri(TWXConnectorPropeties.getBaseUrl())
+//				.basePath("Things/" + ClariaDeviceName + "/Properties/" + propertyName)
+//				.headers(TWXConnectorPropeties.getClariaHeaders()).body(jsonBody.toJSONString()).put();
+//		return responseT;
+//	}
 	
 	public Response setClariaPropertyies(String JSONString, String ClariaDeviceName) {
 		JSONParser parser = new JSONParser();
@@ -127,15 +127,6 @@ public class TWXServices {
 		return responseT;
 	}
 	
-//	public Response registerAmiaDevice(Integer serialNumber) {
-//		JSONObject jsonBody = new JSONObject();
-//		jsonBody.put("serialNumber", serialNumber);
-//		Response responseT = RestAssured.given().baseUri(TWXConnectorPropeties.getBaseUrl())
-//				.basePath("Things/Baxter.DeviceRegistrationManager/Services/RegisterAmiaDevice")
-//				.headers(TWXConnectorPropeties.getClariaHeaders()).body(jsonBody.toJSONString()).post();
-//		return responseT;
-//	}
-
 	public Response registerClariaDevice(Integer serialNumber) {
 		JSONObject jsonBody = new JSONObject();
 		jsonBody.put("serialNumber", serialNumber);
@@ -144,4 +135,13 @@ public class TWXServices {
 				.headers(TWXConnectorPropeties.getClariaHeaders()).body(jsonBody.toJSONString()).post();
 		return responseT;
 	}
+	
+//	public Response registerAmiaDevice(Integer serialNumber) {
+//	JSONObject jsonBody = new JSONObject();
+//	jsonBody.put("serialNumber", serialNumber);
+//	Response responseT = RestAssured.given().baseUri(TWXConnectorPropeties.getBaseUrl())
+//			.basePath("Things/Baxter.DeviceRegistrationManager/Services/RegisterAmiaDevice")
+//			.headers(TWXConnectorPropeties.getClariaHeaders()).body(jsonBody.toJSONString()).post();
+//	return responseT;
+//}
 }
