@@ -114,7 +114,7 @@ public class App {
 //		}
 //		
 //		
-//		Response r5 = st.registerAmiaDevice(556679);
+//		Response r5 = st.registerClariaDevice(11111111);
 //		System.out.println(r5.getBody().asString());
 //		System.out.println(r5.getStatusCode());
 //		
@@ -127,6 +127,9 @@ public class App {
 //		System.out.println(r6.getBody().asString());
 //		System.out.println(r6.getStatusCode());
 		
-		
+//		st.checkClariaExist("test112");//test ok true
+//		st.checkClariaExist("test112");//test ok false
+//		st.checkClariaExist("Claria.6969699");//test ok
+		st.invokeClariaRegisterWithSerialNumber(6969633);
 	}
 }
