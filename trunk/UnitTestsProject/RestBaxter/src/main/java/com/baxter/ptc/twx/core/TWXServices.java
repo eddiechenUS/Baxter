@@ -6,6 +6,7 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
+import com.baxter.ptc.twx.TWXResultGetter;
 import com.baxter.ptc.twx.TWXServicesInvoker;
 
 import io.restassured.RestAssured;
@@ -52,7 +53,8 @@ public class TWXServices {
 			jsonBody = (JSONObject) parser.parse(JSONString);
 		} catch (ParseException e) {
 			e.printStackTrace();
-		}		Response responseT = RestAssured.given().baseUri(TWXConnectorPropeties.getBaseUrl())
+		}
+		Response responseT = RestAssured.given().baseUri(TWXConnectorPropeties.getBaseUrl())
 				.basePath("Things/" + ClariaDeviceName + "/Properties/*")
 				.headers(TWXConnectorPropeties.getClariaHeaders()).body(jsonBody.toJSONString()).put();
 		return responseT;
@@ -66,7 +68,7 @@ public class TWXServices {
 //				.headers(TWXConnectorPropeties.getClariaHeaders()).body(jsonBody.toJSONString()).put();
 //		return responseT;
 //	}
-	
+
 	public Response setClariaPropertyies(String JSONString, String ClariaDeviceName) {
 		JSONParser parser = new JSONParser();
 		JSONObject jsonBody = null;
@@ -80,7 +82,7 @@ public class TWXServices {
 				.headers(TWXConnectorPropeties.getClariaHeaders()).body(jsonBody.toJSONString()).put();
 		return responseT;
 	}
-	
+
 	public Response getClariaProperty(String propertyName, String ClariaDeviceName) {
 		JSONObject jsonBody = new JSONObject();
 		Response responseT = RestAssured.given().baseUri(TWXConnectorPropeties.getBaseUrl())
@@ -88,8 +90,9 @@ public class TWXServices {
 				.headers(TWXConnectorPropeties.getClariaHeaders()).body(jsonBody.toJSONString()).get();
 		return responseT;
 	}
-	
-	public Response sendSettingsrequestFile(String fileName, String checksum, Blob settingsFile, String ClariaDeviceName) {
+
+	public Response sendSettingsrequestFile(String fileName, String checksum, Blob settingsFile,
+			String ClariaDeviceName) {
 		JSONObject jsonBody = new JSONObject();
 		jsonBody.put("fileName", fileName);
 		jsonBody.put("checksum", checksum);
@@ -99,7 +102,7 @@ public class TWXServices {
 				.headers(TWXConnectorPropeties.getClariaHeaders()).body(jsonBody.toJSONString()).post();
 		return responseT;
 	}
-	
+
 	public Response getSettingsresponseFileDetails(String ClariaDeviceName) {
 		JSONObject jsonBody = new JSONObject();
 		Response responseT = RestAssured.given().baseUri(TWXConnectorPropeties.getBaseUrl())
@@ -107,8 +110,9 @@ public class TWXServices {
 				.headers(TWXConnectorPropeties.getClariaHeaders()).body(jsonBody.toJSONString()).post();
 		return responseT;
 	}
-	
-	public Response sendTreatmentResultFile(String fileName, String checksum, Blob treatmentFile, String ClariaDeviceName) {
+
+	public Response sendTreatmentResultFile(String fileName, String checksum, Blob treatmentFile,
+			String ClariaDeviceName) {
 		JSONObject jsonBody = new JSONObject();
 		jsonBody.put("fileName", fileName);
 		jsonBody.put("checksum", checksum);
@@ -118,13 +122,41 @@ public class TWXServices {
 				.headers(TWXConnectorPropeties.getClariaHeaders()).body(jsonBody.toJSONString()).post();
 		return responseT;
 	}
-	
+
 	public Response getFirmwarePackageNameAndSize(String ClariaDeviceName) {
 		JSONObject jsonBody = new JSONObject();
 		Response responseT = RestAssured.given().baseUri(TWXConnectorPropeties.getBaseUrl())
 				.basePath("Things/" + ClariaDeviceName + "/Services/GetFirmwarePackage")
 				.headers(TWXConnectorPropeties.getClariaHeaders()).body(jsonBody.toJSONString()).get();
 		return responseT;
+	}
+
+	public Boolean checkClariaExist(String thingName) {
+		JSONObject jsonBody = new JSONObject();
+		jsonBody.put("type", "Thing");
+		jsonBody.put("nameMask", thingName);
+//		jsonBody.put("thingName", thingName);
+		jsonBody.put("maxItems", 1);
+		Response responseT = RestAssured.given().baseUri(TWXConnectorPropeties.getBaseUrl())
+				.basePath("Resources/EntityServices/Services/GetEntityList")
+				.headers(TWXConnectorPropeties.getClariaHeaders()).body(jsonBody.toJSONString()).post();
+		Boolean result = TWXResultGetter.checkClariaExistJSON(responseT, thingName);
+//		System.out.println(responseT.asString());
+		System.out.println("check if serial number already exist : "+result);
+		return result;
+	}
+
+	public static void invokeClariaRegisterWithSerialNumber(Integer serialNumber) {
+		String thingName = "Claria.".concat(serialNumber.toString());
+		TWXServices ts = new TWXServices();
+		Boolean result = ts.checkClariaExist(thingName);
+		if (!result) {        //If not exist then create one thing
+				ts.registerClariaDevice(serialNumber);
+				System.out.println("created a Claria");
+				Boolean CheckResultAfterCreated=ts.checkClariaExist(thingName);
+		}else {
+//			System.out.println("The serial numbre already exist");
+			}
 	}
 	
 	public Response registerClariaDevice(Integer serialNumber) {
@@ -135,13 +167,4 @@ public class TWXServices {
 				.headers(TWXConnectorPropeties.getClariaHeaders()).body(jsonBody.toJSONString()).post();
 		return responseT;
 	}
-	
-//	public Response registerAmiaDevice(Integer serialNumber) {
-//	JSONObject jsonBody = new JSONObject();
-//	jsonBody.put("serialNumber", serialNumber);
-//	Response responseT = RestAssured.given().baseUri(TWXConnectorPropeties.getBaseUrl())
-//			.basePath("Things/Baxter.DeviceRegistrationManager/Services/RegisterAmiaDevice")
-//			.headers(TWXConnectorPropeties.getClariaHeaders()).body(jsonBody.toJSONString()).post();
-//	return responseT;
-//}
 }
