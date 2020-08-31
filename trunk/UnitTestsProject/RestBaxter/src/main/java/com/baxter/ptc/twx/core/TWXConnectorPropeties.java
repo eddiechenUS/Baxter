@@ -30,6 +30,10 @@ public class TWXConnectorPropeties {
 		return "Things/"+thingName+"/Services/"+serviceName;
 	}
 	
+	public static String getPathForGetThing(String thingName) {
+		return "Things/"+thingName;
+	}
+	
 	public static String getBaseUrl() {
 		return TWXCredentials.BASE_URL;
 	}

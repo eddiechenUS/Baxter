@@ -32,4 +32,9 @@ public class TWXServicesInvoker {
 		return post(thingName, serviceName, new JSONObject());
 	}
 	
+	public static Response getThing(String thingName) {
+		return RestAssured.given().baseUri(TWXConnectorPropeties.getBaseUrl()).
+				basePath(TWXConnectorPropeties.getPathForGetThing(thingName)).headers(TWXConnectorPropeties.getHeaders()).get();
+	}
+	
 }
