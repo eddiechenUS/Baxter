@@ -46,7 +46,7 @@ public class TWXServices {
 //		return responseT;
 //	}
 
-	public Response setClariaProperty(String JSONString, String ClariaDeviceName) {
+	public static Response setClariaProperty(String JSONString, String ClariaDeviceName) {
 		JSONParser parser = new JSONParser();
 		JSONObject jsonBody = null;
 		try {
@@ -57,6 +57,7 @@ public class TWXServices {
 		Response responseT = RestAssured.given().baseUri(TWXConnectorPropeties.getBaseUrl())
 				.basePath("Things/" + ClariaDeviceName + "/Properties/*")
 				.headers(TWXConnectorPropeties.getClariaHeaders()).body(jsonBody.toJSONString()).put();
+		System.out.println(responseT.asString());
 		return responseT;
 	}
 
@@ -69,7 +70,7 @@ public class TWXServices {
 //		return responseT;
 //	}
 
-	public Response setClariaPropertyies(String JSONString, String ClariaDeviceName) {
+	public static Response setClariaPropertyies(String JSONString, String ClariaDeviceName) {
 		JSONParser parser = new JSONParser();
 		JSONObject jsonBody = null;
 		try {
@@ -83,15 +84,16 @@ public class TWXServices {
 		return responseT;
 	}
 
-	public Response getClariaProperty(String propertyName, String ClariaDeviceName) {
+	public static Response getClariaProperty(String propertyName, String ClariaDeviceName) {
 		JSONObject jsonBody = new JSONObject();
 		Response responseT = RestAssured.given().baseUri(TWXConnectorPropeties.getBaseUrl())
 				.basePath("Things/" + ClariaDeviceName + "/Properties/" + propertyName)
 				.headers(TWXConnectorPropeties.getClariaHeaders()).body(jsonBody.toJSONString()).get();
+		System.out.println(responseT.asString());
 		return responseT;
 	}
 
-	public Response sendSettingsrequestFile(String fileName, String checksum, Blob settingsFile,
+	public static Response sendSettingsrequestFile(String fileName, String checksum, Blob settingsFile,
 			String ClariaDeviceName) {
 		JSONObject jsonBody = new JSONObject();
 		jsonBody.put("fileName", fileName);
@@ -103,7 +105,7 @@ public class TWXServices {
 		return responseT;
 	}
 
-	public Response getSettingsresponseFileDetails(String ClariaDeviceName) {
+	public static Response getSettingsresponseFileDetails(String ClariaDeviceName) {
 		JSONObject jsonBody = new JSONObject();
 		Response responseT = RestAssured.given().baseUri(TWXConnectorPropeties.getBaseUrl())
 				.basePath("Things/" + ClariaDeviceName + "/Services/GetResponseFileDetails")
@@ -111,7 +113,7 @@ public class TWXServices {
 		return responseT;
 	}
 
-	public Response sendTreatmentResultFile(String fileName, String checksum, Blob treatmentFile,
+	public static Response sendTreatmentResultFile(String fileName, String checksum, Blob treatmentFile,
 			String ClariaDeviceName) {
 		JSONObject jsonBody = new JSONObject();
 		jsonBody.put("fileName", fileName);
@@ -123,7 +125,7 @@ public class TWXServices {
 		return responseT;
 	}
 
-	public Response getFirmwarePackageNameAndSize(String ClariaDeviceName) {
+	public static Response getFirmwarePackageNameAndSize(String ClariaDeviceName) {
 		JSONObject jsonBody = new JSONObject();
 		Response responseT = RestAssured.given().baseUri(TWXConnectorPropeties.getBaseUrl())
 				.basePath("Things/" + ClariaDeviceName + "/Services/GetFirmwarePackage")
@@ -131,7 +133,7 @@ public class TWXServices {
 		return responseT;
 	}
 
-	public Boolean checkClariaExist(String thingName) {
+	public static Boolean checkClariaExist(String thingName) {
 		JSONObject jsonBody = new JSONObject();
 		jsonBody.put("type", "Thing");
 		jsonBody.put("nameMask", thingName);
@@ -159,12 +161,26 @@ public class TWXServices {
 			}
 	}
 	
-	public Response registerClariaDevice(Integer serialNumber) {
+	public static Response registerClariaDevice(Integer serialNumber) {
 		JSONObject jsonBody = new JSONObject();
 		jsonBody.put("serialNumber", serialNumber);
 		Response responseT = RestAssured.given().baseUri(TWXConnectorPropeties.getBaseUrl())
 				.basePath("Things/Baxter.DeviceRegistrationManager/Services/RegisterClariaDevice")
 				.headers(TWXConnectorPropeties.getClariaHeaders()).body(jsonBody.toJSONString()).post();
+		System.out.println(responseT.getStatusCode());
+		System.out.println(responseT.asString());
 		return responseT;
 	}
+	
+	public static Response getLastRestCall(String ClariaDeviceName) {
+		JSONObject jsonBody = new JSONObject();
+		Response responseT = RestAssured.given().baseUri(TWXConnectorPropeties.getBaseUrl())
+				.basePath("Things/" + ClariaDeviceName + "/Properties/LastRestCall")
+				.headers(TWXConnectorPropeties.getClariaHeaders()).body(jsonBody.toJSONString()).get();
+		Long LastRestCall=TWXResultGetter.getClariaLastRestCall(responseT);
+		System.out.println("LastRestCall = " + LastRestCall);
+		return responseT;
+	}
+	
+	
 }
