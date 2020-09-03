@@ -26,6 +26,24 @@ public class TWXResultGetter {
 		return result;
 	}
 
+	public static String ShowProperty(Response rs, String propertyName) {
+		JSONObject jOJ = null;
+		String result = "";
+		JSONParser parser = new JSONParser();
+		try {
+			jOJ = (JSONObject) parser.parse(rs.getBody().asString());
+
+		} catch (ParseException e) {
+			e.printStackTrace();
+		}
+		ArrayList al = (ArrayList) jOJ.get("rows");
+		for (Object item : al) {
+			JSONObject i = (JSONObject) item;
+			result = (String) i.get(propertyName);
+		}
+		return result;
+	}
+
 	public static Boolean BooleanResult(Response rs) {
 		Boolean result = false;
 		ArrayList al = (ArrayList) j1.get("rows");
@@ -166,4 +184,23 @@ public class TWXResultGetter {
 		}
 		return false;
 	}
+
+	
+	public static Long getClariaLastRestCall(Response res) {
+		Long result = (long) 0.00;
+		try {
+
+			JSONParser parser = new JSONParser();
+			t1 = (JSONObject) parser.parse(res.getBody().asString());
+			ArrayList t12 = (ArrayList) t1.get("rows");
+			for (Object item : t12) {
+				JSONObject i = (JSONObject) item;
+				result =(Long) i.get("LastRestCall");
+				return result;
+			}
+		} catch (ParseException e) {
+		}
+		return result;
+	}
+
 }

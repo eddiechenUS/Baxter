@@ -1,18 +1,10 @@
 package com.baxter.ptc.app;
 
-import java.util.ArrayList;
-import java.util.Iterator;
+import java.util.Date;
 
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
+import javax.xml.crypto.Data;
 
-import com.baxter.ptc.twx.TWXResultGetter;
-import com.baxter.ptc.twx.core.TWXConnectorPropeties;
 import com.baxter.ptc.twx.core.TWXServices;
-
-import io.restassured.RestAssured;
-import io.restassured.response.Response;
 
 public class App {
 	public static void main(String [] args) {
@@ -130,6 +122,36 @@ public class App {
 //		st.checkClariaExist("test112");//test ok true
 //		st.checkClariaExist("test112");//test ok false
 //		st.checkClariaExist("Claria.6969699");//test ok
-		st.invokeClariaRegisterWithSerialNumber(6969633);
+//		st.invokeClariaRegisterWithSerialNumber(6969633);
+//		String testString = "{\"DeviceStatus\":\"DOWNVVVV\"}";
+//		TWXServices.setClariaProperty(testString, "Claria.11223377");
+//		String singlePropertyName = "DeviceStatus";
+//		String FirstsinglePropertyValue = "SHUTTING_DOWN";
+//		String SecondsinglePropertyValue = "POWERED_UPPPPP";
+//		String device ="Claria.11223377";
+//		
+//		String testString = "{\""+singlePropertyName+"\":\""+FirstsinglePropertyValue+"\"}";
+//		TWXServices.setClariaProperty(testString, device);
+//		Response res=TWXServices.getClariaProperty(singlePropertyName, device);
+//		System.out.println("first updated property is = "+singlePropertyName+" property value is "+TWXResultGetter.ShowProperty(res, singlePropertyName));
+//	
+//		String testString2 = "{\""+singlePropertyName+"\":\""+SecondsinglePropertyValue+"\"}";
+//		TWXServices.setClariaProperty(testString2, "Claria.11223311");
+//		Response res2=TWXServices.getClariaProperty(singlePropertyName, device);
+//		System.out.println("Second updated property is = "+singlePropertyName+" property value is "+TWXResultGetter.ShowProperty(res2, singlePropertyName));
+
+		
+		Integer serialNumber = 11223310;
+		String deviceName = "Claria.".concat(serialNumber.toString());
+//		TWXServices.registerClariaDevice(serialNumber);
+//		Response res=TWXServicesInvoker.getThing("Claria.11223311");
+//		System.out.println(res.asString());
+//		TWXServices.registerClariaDevice(11223311);
+		
+		TWXServices.getLastRestCall(deviceName);
+		
+//		int serialnumber = (int) new Date().getTime();
+//		String randomDate = "159"+serialnumber;
+//		System.out.println(randomDate);
 	}
 }
