@@ -26,7 +26,7 @@ public class TWXServices {
 
 
 
-	public static Response setClariaProperty(String JSONString, String ClariaDeviceName) {
+	public static Response setClariaProperty(String JSONString, String deviceName) {
 		JSONParser parser = new JSONParser();
 		JSONObject jsonBody = null;
 		try {
@@ -35,13 +35,13 @@ public class TWXServices {
 			e.printStackTrace();
 		}
 		Response responseT = RestAssured.given().baseUri(TWXConnectorPropeties.getBaseUrl())
-				.basePath("Things/" + ClariaDeviceName + "/Properties/*")
+				.basePath("Things/" + deviceName + "/Properties/*")
 				.headers(TWXConnectorPropeties.getClariaHeaders()).body(jsonBody.toJSONString()).put();
 		System.out.println(responseT.asString());
 		return responseT;
 	}
 
-	public static Response setClariaPropertyies(String JSONString, String ClariaDeviceName) {
+	public static Response setClariaPropertyies(String JSONString, String deviceName) {
 		JSONParser parser = new JSONParser();
 		JSONObject jsonBody = null;
 		try {
@@ -50,32 +50,32 @@ public class TWXServices {
 			e.printStackTrace();
 		}
 		Response responseT = RestAssured.given().baseUri(TWXConnectorPropeties.getBaseUrl())
-				.basePath("Things/" + ClariaDeviceName + "/Properties/*")
+				.basePath("Things/" + deviceName + "/Properties/*")
 				.headers(TWXConnectorPropeties.getClariaHeaders()).body(jsonBody.toJSONString()).put();
 		return responseT;
 	}
 
-	public static Response getClariaProperty(String propertyName, String ClariaDeviceName) {
+	public static Response getClariaProperty(String propertyName, String deviceName) {
 		JSONObject jsonBody = new JSONObject();
 		Response responseT = RestAssured.given().baseUri(TWXConnectorPropeties.getBaseUrl())
-				.basePath("Things/" + ClariaDeviceName + "/Properties/" + propertyName)
+				.basePath("Things/" + deviceName + "/Properties/" + propertyName)
 				.headers(TWXConnectorPropeties.getClariaHeaders()).body(jsonBody.toJSONString()).get();
 		System.out.println(responseT.asString());
 		return responseT;
 	}
 
-	public static Response getSettingsresponseFileDetails(String ClariaDeviceName) {
+	public static Response getSettingsresponseFileDetails(String deviceName) {
 		JSONObject jsonBody = new JSONObject();
 		Response responseT = RestAssured.given().baseUri(TWXConnectorPropeties.getBaseUrl())
-				.basePath("Things/" + ClariaDeviceName + "/Services/GetResponseFileDetails")
+				.basePath("Things/" + deviceName + "/Services/GetResponseFileDetails")
 				.headers(TWXConnectorPropeties.getClariaHeaders()).body(jsonBody.toJSONString()).post();
 		return responseT;
 	}
 
-	public static Response getFirmwarePackageNameAndSize(String ClariaDeviceName) {
+	public static Response getFirmwarePackageNameAndSize(String deviceName) {
 		JSONObject jsonBody = new JSONObject();
 		Response responseT = RestAssured.given().baseUri(TWXConnectorPropeties.getBaseUrl())
-				.basePath("Things/" + ClariaDeviceName + "/Services/GetFirmwarePackage")
+				.basePath("Things/" + deviceName + "/Services/GetFirmwarePackage")
 				.headers(TWXConnectorPropeties.getClariaHeaders()).body(jsonBody.toJSONString()).get();
 		return responseT;
 	}
@@ -119,10 +119,10 @@ public class TWXServices {
 		return responseT;
 	}
 
-	public static Response getLastRestCall(String ClariaDeviceName) {
+	public static Response getLastRestCall(String deviceName) {
 		JSONObject jsonBody = new JSONObject();
 		Response responseT = RestAssured.given().baseUri(TWXConnectorPropeties.getBaseUrl())
-				.basePath("Things/" + ClariaDeviceName + "/Properties/LastRestCall")
+				.basePath("Things/" + deviceName + "/Properties/LastRestCall")
 				.headers(TWXConnectorPropeties.getClariaHeaders()).body(jsonBody.toJSONString()).get();
 		Long LastRestCall = TWXResultGetter.getClariaLastRestCall(responseT);
 		System.out.println("LastRestCall = " + LastRestCall);
@@ -130,10 +130,10 @@ public class TWXServices {
 		return responseT;
 	}
 
-	public static Response getReportingLastChange(String ClariaDeviceName) {
+	public static Response getReportingLastChange(String deviceName) {
 		JSONObject jsonBody = new JSONObject();
 		Response responseT = RestAssured.given().baseUri(TWXConnectorPropeties.getBaseUrl())
-				.basePath("Things/" + ClariaDeviceName + "/Properties/reportingLastChange")
+				.basePath("Things/" + deviceName + "/Properties/reportingLastChange")
 				.headers(TWXConnectorPropeties.getClariaHeaders()).body(jsonBody.toJSONString()).get();
 		Long LastRestCall = TWXResultGetter.getClariaReportingLastChange(responseT);
 		System.out.println("ReportingLastChange = " + LastRestCall);
@@ -141,30 +141,81 @@ public class TWXServices {
 	}
 
 	public static Response uploadTreatmentFile(String fileName, String checksum, String treatmentFile,
-			String ClariaDeviceName) {
+			String deviceName) {
 		JSONObject jsonBody = new JSONObject();
 		jsonBody.put("fileName", fileName);
 		jsonBody.put("checksum", checksum);
 		jsonBody.put("treatmentFile", treatmentFile);
 		Response responseT = RestAssured.given().baseUri(TWXConnectorPropeties.getBaseUrl())
-				.basePath("Things/" + ClariaDeviceName + "/Services/SaveTreatmentFile")
+				.basePath("Things/" + deviceName + "/Services/SaveTreatmentFile")
 				.headers(TWXConnectorPropeties.getClariaHeaders()).body(jsonBody.toJSONString()).post();
 		System.out.println(responseT.asString());
 		return responseT;
 	}
 	
 	public static Response sendSettingsRequestFile(String fileName, String checksum, String settingsFile,
-			String ClariaDeviceName) {
+			String deviceName) {
 		JSONObject jsonBody = new JSONObject();
 		jsonBody.put("fileName", fileName);
 		jsonBody.put("checksum", checksum);
 		jsonBody.put("settingsFile", settingsFile);
 		Response responseT = RestAssured.given().baseUri(TWXConnectorPropeties.getBaseUrl())
-				.basePath("Things/" + ClariaDeviceName + "/Services/SavePatientSettingsFileRequest")
+				.basePath("Things/" + deviceName + "/Services/SavePatientSettingsFileRequest")
 				.headers(TWXConnectorPropeties.getClariaHeaders()).body(jsonBody.toJSONString()).post();
 		System.out.println(responseT.asString());
 		return responseT;
 	}
+	
+	
+	
+	//after save/upload setting file
+	//get setting file step 1
+	public static String getFileRepositoryPath(String deviceName) {
+		JSONObject jsonBody = new JSONObject();
+		jsonBody.put("fileType", "SettingsResponse");
+		Response responseT = RestAssured.given().baseUri(TWXConnectorPropeties.getBaseUrl())
+				.basePath("Things/" + deviceName + "/Services/GetFileRepositoryPath")
+				.headers(TWXConnectorPropeties.getClariaHeaders()).body(jsonBody.toJSONString()).post();
+//		System.out.println("response = "+responseT.asString());
+		String path=TWXResultGetter.ShowResultValue(responseT);
+//		System.out.println("path = "+path);
+		return path;
+	}
+	
+	
+	//get setting file step 2
+	public static String getDownLoadLinkFromFileListingWithLinks(String path) {
+		JSONObject jsonBody = new JSONObject();
+		jsonBody.put("path", "/"+path+"/");
+		Response responseT = RestAssured.given().baseUri(TWXConnectorPropeties.getBaseUrl())
+				.basePath("Things/Baxter.ClariaFileRepository/Services/GetFileListingWithLinks")
+				.headers(TWXConnectorPropeties.getClariaHeaders()).body(jsonBody.toJSONString()).post();
+//		System.out.println("response = " + responseT.asString());
+		String downloadLink=TWXResultGetter.ShowResultValueByColName(responseT, "downloadLink");
+//		String path=TWXResultGetter.StringResult(responseT);
+//		System.out.println("downloadLink = "+downloadLink);
+		return downloadLink;
+	}
+	
+	//get setting file step 3
+	public static Integer getSettingResponseFile(String downloadLink) {
+		JSONObject jsonBody = new JSONObject();
+		jsonBody.put("path", "/"+downloadLink+"/");
+		Response responseT = RestAssured.given().baseUri(TWXConnectorPropeties.getBaseUrl())
+				.basePath(downloadLink.substring(10))
+				.headers(TWXConnectorPropeties.getClariaHeaders()).body(jsonBody.toJSONString()).get();
+		int statusCode=responseT.getStatusCode();
+//		System.out.println("status code = " + statusCode);
+		System.out.println("return content = " + responseT.asString());
+		return statusCode;
+	}
+	
+	public static int getSettingResponseFileCombination(String deviceName) {
+		int statusCode=getSettingResponseFile(getDownLoadLinkFromFileListingWithLinks(getFileRepositoryPath(deviceName)));
+		System.out.println("status code = " + statusCode);
+		return statusCode;
+	}
+	
 	
 	
 	

@@ -45,6 +45,42 @@ public class TWXResultGetter {
 		
 	}
 	
+	public static String ShowResultValue(Response rs) {
+		JSONObject jOJ = null;
+		String result = "";
+		JSONParser parser = new JSONParser();
+		try {
+			jOJ = (JSONObject) parser.parse(rs.getBody().asString());
+			
+		} catch (ParseException e) {
+			e.printStackTrace();
+		}
+		ArrayList al = (ArrayList) jOJ.get("rows");
+		for (Object item : al) {
+			JSONObject i = (JSONObject) item;
+			result = (String) i.get("result");
+		}
+		return result;
+	} 
+	
+	public static String ShowResultValueByColName(Response rs, String ColName) {
+		JSONObject jOJ = null;
+		String result = "";
+		JSONParser parser = new JSONParser();
+		try {
+			jOJ = (JSONObject) parser.parse(rs.getBody().asString());
+			
+		} catch (ParseException e) {
+			e.printStackTrace();
+		}
+		ArrayList al = (ArrayList) jOJ.get("rows");
+		for (Object item : al) {
+			JSONObject i = (JSONObject) item;
+			result = (String) i.get(ColName);
+		}
+		return result;
+	}
+	
 	public static Boolean ShowBoolean(Response rs, String propertyName) {
 		JSONObject jOJ = null;
 		Boolean result = false;

@@ -167,8 +167,11 @@ public class App {
 //		String FileName2 = "SQ_C_1_9999601000.tar.gz.enc";
 //		
 //		
-		Response res=TWXServices.getClariaProperty("isReporting", deviceName);
-		System.out.println( TWXResultGetter.ShowBoolean(res, "isReporting"));
+//		Response res=TWXServices.getClariaProperty("isReporting", deviceName);
+//		System.out.println( TWXResultGetter.ShowBoolean(res, "isReporting"));
+		
+//		TWXServices.getFileRepositoryPath(deviceName);
+		TWXServices.getSettingResponseFileCombination(deviceName);
 		
 		
 ////		TWXServices.uploadTreatmentFile(FileName1, checksum1, treatmentFile, deviceName);
