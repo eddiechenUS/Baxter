@@ -171,8 +171,8 @@ public class App {
 //		System.out.println( TWXResultGetter.ShowBoolean(res, "isReporting"));
 		
 //		TWXServices.getFileRepositoryPath(deviceName);
-		TWXServices.getSettingResponseFileCombination(deviceName);
-		
+//		TWXServices.getSettingResponseFileCombination(deviceName);
+		TWXServices.getAuditLogByDeviceName(deviceName);
 		
 ////		TWXServices.uploadTreatmentFile(FileName1, checksum1, treatmentFile, deviceName);
 //		TWXServices.sendSettingsRequestFile(FileName2, checksum2, settingFileRequest, deviceName);
