@@ -218,11 +218,22 @@ public class TWXServices {
 	
 	
 	public static Response getAuditLogByDeviceName(String deviceName) {
-		String JSONString = "{\"values\":{\"dataShape\":{\"fieldDefinitions\":{\"logTimestamp\":{\"name\":\"logTimestamp\",\"aspects\":{\"isPrimaryKey\":false},\"description\":\"\",\"baseType\":\"DATETIME\",\"ordinal\":5},\"name\":{\"name\":\"name\",\"aspects\":{\"isPrimaryKey\":false},\"description\":\"\",\"baseType\":\"STRING\",\"ordinal\":7},\"action\":{\"name\":\"action\",\"aspects\":{\"isPrimaryKey\":false},\"description\":\"\",\"baseType\":\"STRING\",\"ordinal\":2},\"id\":{\"name\":\"id\",\"aspects\":{\"isPrimaryKey\":true},\"description\":\"\",\"baseType\":\"GUID\",\"ordinal\":4},\"asset\":{\"name\":\"asset\",\"aspects\":{\"isPrimaryKey\":false},\"description\":\"\",\"baseType\":\"STRING\",\"ordinal\":3},\"category\":{\"name\":\"category\",\"aspects\":{\"isPrimaryKey\":false},\"description\":\"\",\"baseType\":\"STRING\",\"ordinal\":6}}},\"rows\":[{\"asset\":\""+deviceName+"\"}]},\"maxItems\":500}";
+		String JSONString = "{\"values\":{\"dataShape\":{\"fieldDefinitions\":{\"logTimestamp\":{\"name\":\"logTimestamp\",\"aspects\":{\"isPrimaryKey\":false},\"description\":\"\",\"baseType\":\"DATETIME\",\"ordinal\":5},\"name\":{\"name\":\"name\",\"aspects\":{\"isPrimaryKey\":false},\"description\":\"\",\"baseType\":\"STRING\",\"ordinal\":7},\"action\":{\"name\":\"action\",\"aspects\":{\"isPrimaryKey\":false},\"description\":\"\",\"baseType\":\"STRING\",\"ordinal\":2},\"id\":{\"name\":\"id\",\"aspects\":{\"isPrimaryKey\":true},\"description\":\"\",\"baseType\":\"GUID\",\"ordinal\":4},\"asset\":{\"name\":\"asset\",\"aspects\":{\"isPrimaryKey\":false},\"description\":\"\",\"baseType\":\"STRING\",\"ordinal\":3},\"category\":{\"name\":\"category\",\"aspects\":{\"isPrimaryKey\":false},\"description\":\"\",\"baseType\":\"STRING\",\"ordinal\":6}}},\"rows\":[{\"asset\":\""+deviceName+"\"}]},\"maxItems\":10}";
 		Response responseT = RestAssured.given().baseUri(TWXConnectorPropeties.getBaseUrl())
 				.basePath("Things/Baxter.AuditLogDataTable/Services/QueryDataTableEntries")
 				.headers(TWXConnectorPropeties.getClariaHeaders()).body(JSONString).post();
 		System.out.println(responseT.asString());
+		return responseT;
+	}
+	
+	
+	public static Response getDescendQuery(String deviceName) {
+		JSONObject jsonBody = new JSONObject();
+		Response responseT = RestAssured.given().baseUri(TWXConnectorPropeties.getBaseUrl())
+				.basePath("Things/TestThing1222/Services/descendQuery")
+				.headers(TWXConnectorPropeties.getClariaHeaders()).body(jsonBody.toJSONString()).post();
+		System.out.println(responseT.asString());
+		System.out.println();
 		return responseT;
 	}
 	

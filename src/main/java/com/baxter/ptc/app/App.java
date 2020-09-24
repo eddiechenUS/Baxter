@@ -172,8 +172,8 @@ public class App {
 		
 //		TWXServices.getFileRepositoryPath(deviceName);
 //		TWXServices.getSettingResponseFileCombination(deviceName);
-		TWXServices.getAuditLogByDeviceName(deviceName);
-		
+//		TWXServices.getAuditLogByDeviceName(deviceName);
+		TWXServices.getDescendQuery(deviceName);
 ////		TWXServices.uploadTreatmentFile(FileName1, checksum1, treatmentFile, deviceName);
 //		TWXServices.sendSettingsRequestFile(FileName2, checksum2, settingFileRequest, deviceName);
 

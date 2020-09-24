@@ -156,5 +156,5 @@ public class ClariaTestCase1 {
 		Assert.assertEquals(false, TWXResultGetter.ShowBoolean(res2, "isReporting"));
 	}
 	
-	
+//	Assert.assertEquals("", TWXResultGetter.ShowBoolean(res2, "isReporting"));
 }
