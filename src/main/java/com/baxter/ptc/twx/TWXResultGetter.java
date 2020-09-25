@@ -42,16 +42,16 @@ public class TWXResultGetter {
 			result = (String) i.get(propertyName);
 		}
 		return result;
-		
+
 	}
-	
+
 	public static String ShowResultValue(Response rs) {
 		JSONObject jOJ = null;
 		String result = "";
 		JSONParser parser = new JSONParser();
 		try {
 			jOJ = (JSONObject) parser.parse(rs.getBody().asString());
-			
+
 		} catch (ParseException e) {
 			e.printStackTrace();
 		}
@@ -61,15 +61,15 @@ public class TWXResultGetter {
 			result = (String) i.get("result");
 		}
 		return result;
-	} 
-	
+	}
+
 	public static String ShowResultValueByColName(Response rs, String ColName) {
 		JSONObject jOJ = null;
 		String result = "";
 		JSONParser parser = new JSONParser();
 		try {
 			jOJ = (JSONObject) parser.parse(rs.getBody().asString());
-			
+
 		} catch (ParseException e) {
 			e.printStackTrace();
 		}
@@ -80,7 +80,7 @@ public class TWXResultGetter {
 		}
 		return result;
 	}
-	
+
 	public static Boolean ShowBoolean(Response rs, String propertyName) {
 		JSONObject jOJ = null;
 		Boolean result = false;
@@ -94,12 +94,12 @@ public class TWXResultGetter {
 		ArrayList al = (ArrayList) jOJ.get("rows");
 		for (Object item : al) {
 			JSONObject i = (JSONObject) item;
-			result =  (Boolean) i.get(propertyName);
+			result = (Boolean) i.get(propertyName);
 		}
+		System.out.println("ShowBoolean = "+result);
 		return result;
-		
+
 	}
-	
 
 	public static Boolean BooleanResult(Response rs) {
 		Boolean result = false;
@@ -242,7 +242,6 @@ public class TWXResultGetter {
 		return false;
 	}
 
-	
 	public static Long getClariaLastRestCall(Response res) {
 		Long result = (long) 0.00;
 		try {
@@ -252,29 +251,102 @@ public class TWXResultGetter {
 			ArrayList t12 = (ArrayList) t1.get("rows");
 			for (Object item : t12) {
 				JSONObject i = (JSONObject) item;
-				result =(Long) i.get("LastRestCall");
+				result = (Long) i.get("LastRestCall");
 				return result;
+			}
+		} catch (ParseException e) {
+		}
+		return result;
+	}
+
+	public static Long getClariaReportingLastChange(Response res) {
+		Long result = (long) 0.00;
+		try {
+
+			JSONParser parser = new JSONParser();
+			t1 = (JSONObject) parser.parse(res.getBody().asString());
+			ArrayList t12 = (ArrayList) t1.get("rows");
+			for (Object item : t12) {
+				JSONObject i = (JSONObject) item;
+				result = (Long) i.get("reportingLastChange");
+				return result;
+			}
+		} catch (ParseException e) {
+		}
+		return result;
+	}
+
+	public static Long getAuditTimeStamp(Response res) {
+		return null;
+
+	}
+
+	public static String getAction(Response res) {
+		JSONObject Q1 = null;
+		String result = "";
+		Integer count = 1;
+		try {
+
+			JSONParser parser = new JSONParser();
+			Q1 = (JSONObject) parser.parse(res.getBody().asString());
+			ArrayList t12 = (ArrayList) Q1.get("rows");
+			while (count != 0) {
+				for (Object item : t12) {
+					JSONObject i = (JSONObject) item;
+					result = (String) i.get("action");
+					return result;
+				}
+				count--;
+			}
+		} catch (ParseException e) {
+		}
+		return result;
+	}
+
+	public static String getAsset(Response res) {
+		JSONObject Q1 = null;
+		String result = "";
+		Integer count = 1;
+		try {
+
+			JSONParser parser = new JSONParser();
+			Q1 = (JSONObject) parser.parse(res.getBody().asString());
+			ArrayList t12 = (ArrayList) Q1.get("rows");
+			while (count != 0) {
+				for (Object item : t12) {
+					JSONObject i = (JSONObject) item;
+					result = (String) i.get("asset");
+					return result;
+				}
+				count--;
 			}
 		} catch (ParseException e) {
 		}
 		return result;
 	}
 	
-	public static Long getClariaReportingLastChange(Response res) {
-		Long result = (long) 0.00;
+	public static Long getTimeStamp(Response res) {
+		JSONObject Q1 = null;
+		Long result = 0L;
+		Integer count = 1;
 		try {
-			
+
 			JSONParser parser = new JSONParser();
-			t1 = (JSONObject) parser.parse(res.getBody().asString());
-			ArrayList t12 = (ArrayList) t1.get("rows");
-			for (Object item : t12) {
-				JSONObject i = (JSONObject) item;
-				result =(Long) i.get("reportingLastChange");
-				return result;
+			Q1 = (JSONObject) parser.parse(res.getBody().asString());
+			ArrayList t12 = (ArrayList) Q1.get("rows");
+			while (count != 0) {
+				for (Object item : t12) {
+					JSONObject i = (JSONObject) item;
+					result = (Long) i.get("timestamp");
+					return result;
+				}
+				count--;
 			}
 		} catch (ParseException e) {
 		}
 		return result;
 	}
+	
+	
 
 }

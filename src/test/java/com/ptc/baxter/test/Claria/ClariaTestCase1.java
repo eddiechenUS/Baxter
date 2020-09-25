@@ -14,7 +14,7 @@ import io.restassured.response.Response;
 
 public class ClariaTestCase1 {
 
-	static String DEVICENAME = "Claria.11223377";
+//	static String DEVICENAME = "Claria.11223377";
 
 	/**
 	 * @org.junit.Test public void test1() { int a = 2; int b = 2; int c = a + b;
@@ -23,27 +23,63 @@ public class ClariaTestCase1 {
 
 	
 	
+
 	
-	
-	// testRegisterClaria
+	// task 165 :testRegisterClaria
 	@org.junit.Test
 	public void testRegisterDevice() {// completed
-		int serialnumber;
+		Long initialTime = (Long) new Date().getTime();
+		Integer serialNumber;
 //		int serialnumber = (int) new Date().getTime();
-		serialnumber = 11223344;
+		serialNumber = 441188;
+		String deviceName = "Claria.".concat(serialNumber.toString());
 		Response response;
 		// Create new thing
-		TWXServices.registerClariaDevice(serialnumber);
+		TWXServices.registerClariaDevice(serialNumber);
 		// check in twx is exist
-		response = TWXServicesInvoker.getThing("Claria." + serialnumber);
+		response = TWXServicesInvoker.getThing("Claria." + serialNumber);
 		System.out.println(response.getStatusCode());
 		// add assert
 		Assert.assertEquals(200, response.getStatusCode());
 		// Create new thing
-		response = TWXServices.registerClariaDevice(serialnumber);
+		response = TWXServices.registerClariaDevice(serialNumber);
 		// check in twx is exist
 		Assert.assertEquals(200, response.getStatusCode());
+		Long currentTime = TWXServices.getTimeStamp(deviceName);
+//		System.out.println("current time = "+currentTime);
+//		System.out.println("initial time = "+initialTime);
+		// check auditLog if added
+		Assert.assertTrue(currentTime>initialTime);
+		Assert.assertEquals(deviceName,TWXServices.getAsset(deviceName));
+		Assert.assertEquals("Cannot register device, device already exists",TWXServices.getAction(deviceName));
 	}
+	
+	//task 168
+	@org.junit.Test
+	public void testUpdateProperty_RegisterDevice_getProperty() {
+		Long initialTime = (Long) new Date().getTime();
+		Integer serialNumber = 441177;
+		String deviceName = "Claria.".concat(serialNumber.toString());
+		String singlePropertyName = "DeviceStatus";
+		//set property value
+		String FirstsinglePropertyValue = "POWERED_UP";
+		String testString = "{\"" + singlePropertyName + "\":\"" + FirstsinglePropertyValue + "\"}";
+		TWXServices.setClariaProperty(testString, deviceName);
+		//register same device again
+		TWXServices.registerClariaDevice(serialNumber);
+		Long currentTime = TWXServices.getTimeStamp(deviceName);
+//		System.out.println("current time = "+currentTime);
+//		System.out.println("initial time = "+initialTime);
+		// check auditLog if added
+		Assert.assertTrue(currentTime>initialTime);
+		Assert.assertEquals(deviceName,TWXServices.getAsset(deviceName));
+		Assert.assertEquals("Cannot register device, device already exists",TWXServices.getAction(deviceName));
+		Response res2 = TWXServices.getClariaProperty(singlePropertyName, deviceName);
+		// check property value
+		Assert.assertEquals(FirstsinglePropertyValue, TWXResultGetter.ShowProperty(res2, singlePropertyName));
+	}
+	
+
 
 	@org.junit.Test
 	public void testUpdateAndGetProperties() {// completed
@@ -67,12 +103,16 @@ public class ClariaTestCase1 {
 //		System.out.println("Second updated property is = "+singlePropertyName+" property value is "+TWXResultGetter.ShowProperty(res2, singlePropertyName));
 		Assert.assertEquals(SecondsinglePropertyValue, TWXResultGetter.ShowProperty(res2, singlePropertyName));
 	}
+	
+
+
+	
 
 	@org.junit.Test
 	public void testUpdateRegisterAndGetProperty() {// incompleted = need to change to set multiple properties
 		String singlePropertyName = "DeviceStatus";
-		String FirstsinglePropertyValue = "POWERED_UPPP";
-		Integer serialNumber = 11223377;
+		String FirstsinglePropertyValue = "POWERED_UPPPPP";
+		Integer serialNumber = 441188;
 		String device = "Claria.".concat(serialNumber.toString());
 		String testString = "{\"" + singlePropertyName + "\":\"" + FirstsinglePropertyValue + "\"}";
 		// set property value
@@ -84,7 +124,7 @@ public class ClariaTestCase1 {
 		Assert.assertEquals(FirstsinglePropertyValue, TWXResultGetter.ShowProperty(res, singlePropertyName));
 	}
 
-	
+
 	
 	 	//treatmentFile
 		String treatmentFile ="2TbnPevxsUFCY1K1/VMwYMKNJXpQcC/j/6jF0oqKTbqh8hAlITkwjVNHrkeS19K+f4tsAh9ifLp8R6yzZbB1u9OK3udC+JX1GiPeHFV4RhY+3NfRYktMSJHbWUmyRWRiy795PYBCkC7bk1z59sfBciBsjJ3uvAfdolwU7YCZ0HJA3KZrN1a9epWmzFndKId5wEABucHK93T/So5vkuuVM4QQMJ9KiT+A4zQ8kMdrn9ZjuOi2HX8JpHJpYR+R4p2UFRb+tbHdKK7bB+7MGr05l0+5E3cJeCOoQxA2ScabgLu1Qon0q9Pqg4AG/uINg88wFy1R3vZWcPDTZtudPdWOR6CpIvEWaY+DimXu8t5jlQSX7pCDlO67N3AQtAtuOe2XBfVQbKNWSu9sglnqyTSGl4Fn2otZjyjsAoMPJbNdS2zNKISepmRt3wbPUiSheh21ZQVyI+hVyGOkjtgAgrDH8daMt6SBEoyDTPeF2JqpTLJDTK/Oa0YuHn2G+TPooxY/2BiSrV8Z1DCnoDLDjNrZS0rCQEh8nDgCB9vWNSO4bUgDHlHzjsjPsgRgxehYdiQgRbNBEa7V0QrKHTaUr6BUBZIqgsxaryn/3ED0emrTqDo1kdThTH/V6oJHa6bjyagL8fNDIiPQbsVTnTLJklLSEiaMBwrDmIS6jDB+Icucp4aw7yI2KeaYVvZn8NGQpgyq/qNO7dm4GmadERTcDsg1IbWJAOB05OvdaGQLIQf/8PVuikFjlAvu9Wq8WF/hXEj8iipueONiF5ggsnipN7DUCeeHkKk4+2dqmqlocxaaHcKPM38H794Fi+Aucei5LOaoifN74Sw1iGgj4A2WnxIGf6ssaHVrVxGFRwFy+gLt6PtIZq7Cs6tUizRM7uTc61C+Ihi+JbRWvOM9wTAvJGoWVp8dJpjFeAI5t0aGPRGCGDU0r7kCjZmyllHj1Yhi68fjfgYAnxElxjQNpb+SYEQ0DCTUXQZmynbaZJMWbam9rXL/t/B+n26edhv2zvhIXhIzMMIMTuBlrupcp7PogcjNMnDbAx+wZWuWLUdvn6d+mY/euDHX4YKlErhJesHAj0EOsVzOAHbY/XKiU+SWH6Im1tGLLFsXX42sNi0XTW8YLJ3WUIMdqRQymZTtGnBafufqdp3gDtsslYYZshnWJ48PtwPtg8UfvjemVGOVPAFZRJO2BwdhXubJOEwbCORuslN3xdheEPug449AYjrbU1EtZstkPGih9A2UwBsodjMO7/RUVsUAsboFxJ6uhzc6j3wNhq7YT6y+asvtMFqAKzw8vY9tck5dI1rKVdQ8JlKXEWORGnvx6RC4+UfyPTlziT1NFxBMJMGq6upRxZhPYZS6cH5G3CNmO3GsS3nrMg0rb3imjUXpq+de/4uyhksyjHacP1nIzvbQ490+tZ2H3jZ/RyhDLa6n3l9/4SsBBZD6T44sy3P6ebsSEgPMXyR8+ZwRG8STRGRm8UzVwWl6MVGSfgy4BuA7l1QSOxBu4MHZtQdOqpMBZGcSqCMvkUA8FneVAWPbDlI17FOsUPWV8pIhYX/bJ+h8RiuB+VLobQpbJ2sB1QW6GswrfxFyC+wr8Dny1YHNx+awK/jF31Kd3ud/nQ==";
@@ -155,6 +195,30 @@ public class ClariaTestCase1 {
 		Response res2=TWXServices.getClariaProperty("isReporting", deviceName);
 		Assert.assertEquals(false, TWXResultGetter.ShowBoolean(res2, "isReporting"));
 	}
+	
+
+	
+
+	
+		
+//	@org.junit.Test
+//	public void quickTest() {
+//		Integer serialNumber = 441177;
+//		String deviceName = "Claria.".concat(serialNumber.toString());
+//		
+//	 	//treatmentFile
+//		String treatmentFile ="2TbnPevxsUFCY1K1/VMwYMKNJXpQcC/j/6jF0oqKTbqh8hAlITkwjVNHrkeS19K+f4tsAh9ifLp8R6yzZbB1u9OK3udC+JX1GiPeHFV4RhY+3NfRYktMSJHbWUmyRWRiy795PYBCkC7bk1z59sfBciBsjJ3uvAfdolwU7YCZ0HJA3KZrN1a9epWmzFndKId5wEABucHK93T/So5vkuuVM4QQMJ9KiT+A4zQ8kMdrn9ZjuOi2HX8JpHJpYR+R4p2UFRb+tbHdKK7bB+7MGr05l0+5E3cJeCOoQxA2ScabgLu1Qon0q9Pqg4AG/uINg88wFy1R3vZWcPDTZtudPdWOR6CpIvEWaY+DimXu8t5jlQSX7pCDlO67N3AQtAtuOe2XBfVQbKNWSu9sglnqyTSGl4Fn2otZjyjsAoMPJbNdS2zNKISepmRt3wbPUiSheh21ZQVyI+hVyGOkjtgAgrDH8daMt6SBEoyDTPeF2JqpTLJDTK/Oa0YuHn2G+TPooxY/2BiSrV8Z1DCnoDLDjNrZS0rCQEh8nDgCB9vWNSO4bUgDHlHzjsjPsgRgxehYdiQgRbNBEa7V0QrKHTaUr6BUBZIqgsxaryn/3ED0emrTqDo1kdThTH/V6oJHa6bjyagL8fNDIiPQbsVTnTLJklLSEiaMBwrDmIS6jDB+Icucp4aw7yI2KeaYVvZn8NGQpgyq/qNO7dm4GmadERTcDsg1IbWJAOB05OvdaGQLIQf/8PVuikFjlAvu9Wq8WF/hXEj8iipueONiF5ggsnipN7DUCeeHkKk4+2dqmqlocxaaHcKPM38H794Fi+Aucei5LOaoifN74Sw1iGgj4A2WnxIGf6ssaHVrVxGFRwFy+gLt6PtIZq7Cs6tUizRM7uTc61C+Ihi+JbRWvOM9wTAvJGoWVp8dJpjFeAI5t0aGPRGCGDU0r7kCjZmyllHj1Yhi68fjfgYAnxElxjQNpb+SYEQ0DCTUXQZmynbaZJMWbam9rXL/t/B+n26edhv2zvhIXhIzMMIMTuBlrupcp7PogcjNMnDbAx+wZWuWLUdvn6d+mY/euDHX4YKlErhJesHAj0EOsVzOAHbY/XKiU+SWH6Im1tGLLFsXX42sNi0XTW8YLJ3WUIMdqRQymZTtGnBafufqdp3gDtsslYYZshnWJ48PtwPtg8UfvjemVGOVPAFZRJO2BwdhXubJOEwbCORuslN3xdheEPug449AYjrbU1EtZstkPGih9A2UwBsodjMO7/RUVsUAsboFxJ6uhzc6j3wNhq7YT6y+asvtMFqAKzw8vY9tck5dI1rKVdQ8JlKXEWORGnvx6RC4+UfyPTlziT1NFxBMJMGq6upRxZhPYZS6cH5G3CNmO3GsS3nrMg0rb3imjUXpq+de/4uyhksyjHacP1nIzvbQ490+tZ2H3jZ/RyhDLa6n3l9/4SsBBZD6T44sy3P6ebsSEgPMXyR8+ZwRG8STRGRm8UzVwWl6MVGSfgy4BuA7l1QSOxBu4MHZtQdOqpMBZGcSqCMvkUA8FneVAWPbDlI17FOsUPWV8pIhYX/bJ+h8RiuB+VLobQpbJ2sB1QW6GswrfxFyC+wr8Dny1YHNx+awK/jF31Kd3ud/nQ==";
+//		String checksum1 = "16A75D8D8C9A3D18A4358E892705F046";
+//		String FileName1 = "T_C_2_1501001701_00001.tar.gz.enc";
+//		Response res=TWXServices.uploadTreatmentFile(FileName1, checksum1, treatmentFile, deviceName);
+//		Assert.assertEquals(200, res.getStatusCode());
+//	}
+	
+	
+	
+	
+	
+
 	
 //	Assert.assertEquals("", TWXResultGetter.ShowBoolean(res2, "isReporting"));
 }

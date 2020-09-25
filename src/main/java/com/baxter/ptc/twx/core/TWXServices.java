@@ -232,9 +232,27 @@ public class TWXServices {
 		Response responseT = RestAssured.given().baseUri(TWXConnectorPropeties.getBaseUrl())
 				.basePath("Things/TestThing1222/Services/descendQuery")
 				.headers(TWXConnectorPropeties.getClariaHeaders()).body(jsonBody.toJSONString()).post();
-		System.out.println(responseT.asString());
-		System.out.println();
+//		System.out.println(responseT.asString());
 		return responseT;
+	}
+	
+	
+	public static String getAction(String deviceName) {
+		String action=TWXResultGetter.getAction(getDescendQuery(deviceName));
+		System.out.println("action = "+action);
+		return action;
+	}
+	
+	public static String getAsset(String deviceName) {
+		String action=TWXResultGetter.getAsset(getDescendQuery(deviceName));
+		System.out.println("asset = "+action);
+		return action;
+	}
+	
+	public static Long getTimeStamp(String deviceName) {
+		Long action=TWXResultGetter.getTimeStamp(getDescendQuery(deviceName));
+		System.out.println("timestamp = "+action);
+		return action;
 	}
 	
 	
