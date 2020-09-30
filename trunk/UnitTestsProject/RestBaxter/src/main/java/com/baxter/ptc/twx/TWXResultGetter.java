@@ -64,10 +64,12 @@ public class TWXResultGetter {
 	}
 
 	public static String ShowResultValueByColName(Response rs, String ColName) {
+		
 		JSONObject jOJ = null;
 		String result = "";
 		JSONParser parser = new JSONParser();
 		try {
+			System.out.println("rs.getBody().asString() ="+rs.getBody().asString());
 			jOJ = (JSONObject) parser.parse(rs.getBody().asString());
 
 		} catch (ParseException e) {
@@ -96,7 +98,7 @@ public class TWXResultGetter {
 			JSONObject i = (JSONObject) item;
 			result = (Boolean) i.get(propertyName);
 		}
-		System.out.println("ShowBoolean = "+result);
+		System.out.println("ShowBoolean = " + result);
 		return result;
 
 	}
@@ -324,7 +326,51 @@ public class TWXResultGetter {
 		}
 		return result;
 	}
-	
+
+	public static String getCategory(Response res) {
+		JSONObject Q1 = null;
+		String result = "";
+		Integer count = 1;
+		try {
+
+			JSONParser parser = new JSONParser();
+			Q1 = (JSONObject) parser.parse(res.getBody().asString());
+			ArrayList t12 = (ArrayList) Q1.get("rows");
+			while (count != 0) {
+				for (Object item : t12) {
+					JSONObject i = (JSONObject) item;
+					result = (String) i.get("category");
+					return result;
+				}
+				count--;
+			}
+		} catch (ParseException e) {
+		}
+		return result;
+	}
+
+	public static String getName(Response res) {
+		JSONObject Q1 = null;
+		String result = "";
+		Integer count = 1;
+		try {
+
+			JSONParser parser = new JSONParser();
+			Q1 = (JSONObject) parser.parse(res.getBody().asString());
+			ArrayList t12 = (ArrayList) Q1.get("rows");
+			while (count != 0) {
+				for (Object item : t12) {
+					JSONObject i = (JSONObject) item;
+					result = (String) i.get("name");
+					return result;
+				}
+				count--;
+			}
+		} catch (ParseException e) {
+		}
+		return result;
+	}
+
 	public static Long getTimeStamp(Response res) {
 		JSONObject Q1 = null;
 		Long result = 0L;
@@ -346,7 +392,53 @@ public class TWXResultGetter {
 		}
 		return result;
 	}
+
+	public static Boolean getIsFileBackupEnabled(Response res) {
+		JSONObject Q1 = null;
+		Boolean result = false;
+		Integer count = 1;
+		try {
+
+			JSONParser parser = new JSONParser();
+			Q1 = (JSONObject) parser.parse(res.getBody().asString());
+			ArrayList t12 = (ArrayList) Q1.get("rows");
+			while (count != 0) {
+				for (Object item : t12) {
+					JSONObject i = (JSONObject) item;
+					result = (Boolean) i.get("isFileBackupEnabled");
+					return result;
+				}
+				count--;
+			}
+		} catch (ParseException e) {
+		}
+		return result;
+	}
+
 	
-	
+	public static Boolean getSettingsResponseFileDetailsMatchName(Response res, String settingRequestFileName) {
+		JSONObject Q1 = null;
+		String settingResponseFileName = "SR".concat(settingRequestFileName.substring(1));
+		try {
+
+			JSONParser parser = new JSONParser();
+			Q1 = (JSONObject) parser.parse(res.getBody().asString());
+			ArrayList t12 = (ArrayList) Q1.get("rows");
+			Integer length = t12.size();
+			int L = 0;
+			while (L < length) {
+				for (Object item : t12) {
+					JSONObject i = (JSONObject) item;
+					if (settingResponseFileName.equals((String) i.get("name"))) {
+						return true;
+					}
+					return false;
+				}
+				L++;
+			}
+		} catch (ParseException e) {
+		}
+		return false;
+	}
 
 }

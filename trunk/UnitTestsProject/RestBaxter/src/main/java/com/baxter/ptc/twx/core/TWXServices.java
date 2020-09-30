@@ -63,6 +63,16 @@ public class TWXServices {
 		System.out.println(responseT.asString());
 		return responseT;
 	}
+	
+	public static Boolean getBaxterFileBackupConfigurator_IsFileBackupEnabled(String propertyName) {
+		JSONObject jsonBody = new JSONObject();
+		Response responseT = RestAssured.given().baseUri(TWXConnectorPropeties.getBaseUrl())
+				.basePath("Things/Baxter.FileBackupConfigurator/Properties/" + propertyName)
+				.headers(TWXConnectorPropeties.getClariaHeaders()).body(jsonBody.toJSONString()).get();
+		Boolean result = TWXResultGetter.getIsFileBackupEnabled(responseT);
+		System.out.println(responseT.asString());
+		return result;
+	}
 
 	public static Response getSettingsresponseFileDetails(String deviceName) {
 		JSONObject jsonBody = new JSONObject();
@@ -118,6 +128,19 @@ public class TWXServices {
 		System.out.println(responseT.asString());
 		return responseT;
 	}
+	
+	
+	
+	public static Boolean getSettingsResponseFileDetails(String deviceName, String settingReqestFileName) {
+		JSONObject jsonBody = new JSONObject();
+		Response responseT = RestAssured.given().baseUri(TWXConnectorPropeties.getBaseUrl())
+				.basePath("Things/" + deviceName + "/Services/GetResponseFileDetails")
+				.headers(TWXConnectorPropeties.getClariaHeaders()).body(jsonBody.toJSONString()).post();
+		Boolean IfMatch =  TWXResultGetter.getSettingsResponseFileDetailsMatchName(responseT, settingReqestFileName);
+		System.out.println(responseT.asString());
+		return IfMatch;
+	}
+	
 
 	public static Response getLastRestCall(String deviceName) {
 		JSONObject jsonBody = new JSONObject();
@@ -170,7 +193,25 @@ public class TWXServices {
 	
 	//after save/upload setting file
 	//get setting file step 1
-	public static String getFileRepositoryPath(String deviceName) {
+	//service:   - input : TreatmentResults return 441/177/441177/TreatmentResults or input : SettingsRequest return 441/177/441177/SettingsRequest
+	// if need to check whether in the backup, then input  /441/188/441188/SettingsResponse/Backup/ in the following GetFileListingWithLinks service in Thing: Baxter.ClariaFileRepository
+	public static String getFileRepositoryPath_TreatmentFile(String deviceName) {
+		JSONObject jsonBody = new JSONObject();
+		jsonBody.put("fileType", "TreatmentResults");
+		Response responseT = RestAssured.given().baseUri(TWXConnectorPropeties.getBaseUrl())
+				.basePath("Things/" + deviceName + "/Services/GetFileRepositoryPath")
+				.headers(TWXConnectorPropeties.getClariaHeaders()).body(jsonBody.toJSONString()).post();
+//		System.out.println("response = "+responseT.asString());
+		String path=TWXResultGetter.ShowResultValue(responseT);
+//		System.out.println("path = "+path);
+		return path;
+	}
+	
+	//after save/upload setting file
+	//get setting file step 1
+	//service:   - input : TreatmentResults return 441/177/441177/TreatmentResults or input : SettingsRequest return 441/177/441177/SettingsRequest
+	// if need to check whether in the backup, then input  /441/188/441188/SettingsResponse/Backup/ in the following GetFileListingWithLinks service in Thing: Baxter.ClariaFileRepository
+	public static String getFileRepositoryPath_SettingFile(String deviceName) {
 		JSONObject jsonBody = new JSONObject();
 		jsonBody.put("fileType", "SettingsResponse");
 		Response responseT = RestAssured.given().baseUri(TWXConnectorPropeties.getBaseUrl())
@@ -185,33 +226,92 @@ public class TWXServices {
 	
 	//get setting file step 2
 	public static String getDownLoadLinkFromFileListingWithLinks(String path) {
+		String downloadLink = "";
 		JSONObject jsonBody = new JSONObject();
 		jsonBody.put("path", "/"+path+"/");
 		Response responseT = RestAssured.given().baseUri(TWXConnectorPropeties.getBaseUrl())
 				.basePath("Things/Baxter.ClariaFileRepository/Services/GetFileListingWithLinks")
 				.headers(TWXConnectorPropeties.getClariaHeaders()).body(jsonBody.toJSONString()).post();
 //		System.out.println("response = " + responseT.asString());
-		String downloadLink=TWXResultGetter.ShowResultValueByColName(responseT, "downloadLink");
+		downloadLink=TWXResultGetter.ShowResultValueByColName(responseT, "downloadLink");
 //		String path=TWXResultGetter.StringResult(responseT);
-//		System.out.println("downloadLink = "+downloadLink);
-		return downloadLink;
+		//if download link = null - > no data, no file exist
+		if(downloadLink==null || (downloadLink!=null && downloadLink.length()==0)) {
+			downloadLink = "NoData";
+			return downloadLink;
+//			System.out.println("downloadLink ="+downloadLink+"end");
+		}else{
+			return downloadLink; 
+//			System.out.println("downloadLink ="+downloadLink+"end");
+			}
+	}
+	
+	
+	//get setting file step 2
+	public static String getDownLoadLinkFromFileListingWithLinks_In_BackupFile(String path) {
+		String downloadLink = "";
+		JSONObject jsonBody = new JSONObject();
+		jsonBody.put("path", "/"+path+"/Backup/");//      /441/188/441188/SettingsResponse/Backup/
+		Response responseT = RestAssured.given().baseUri(TWXConnectorPropeties.getBaseUrl())
+				.basePath("Things/Baxter.ClariaFileRepository/Services/GetFileListingWithLinks")
+				.headers(TWXConnectorPropeties.getClariaHeaders()).body(jsonBody.toJSONString()).post();
+		System.out.println("status code here = "+ responseT.getStatusCode());
+//		System.out.println("response = " + responseT.asString());
+		downloadLink=TWXResultGetter.ShowResultValueByColName(responseT, "downloadLink");
+//		String path=TWXResultGetter.StringResult(responseT);
+		//if download link = null - > no data, no file exist
+		if(downloadLink==null || (downloadLink!=null && downloadLink.length()==0)) {
+			return "NoData";
+//			System.out.println("downloadLink ="+downloadLink+"end");
+		}else{
+			return downloadLink; 
+//			System.out.println("downloadLink ="+downloadLink+"end");
+			}
 	}
 	
 	//get setting file step 3
-	public static Integer getSettingResponseFile(String downloadLink) {
-		JSONObject jsonBody = new JSONObject();
-		jsonBody.put("path", "/"+downloadLink+"/");
-		Response responseT = RestAssured.given().baseUri(TWXConnectorPropeties.getBaseUrl())
-				.basePath(downloadLink.substring(10))
-				.headers(TWXConnectorPropeties.getClariaHeaders()).body(jsonBody.toJSONString()).get();
-		int statusCode=responseT.getStatusCode();
-//		System.out.println("status code = " + statusCode);
-		System.out.println("return content = " + responseT.asString());
+	//shows settingRequest content and settingResponse file content and treatment file content
+	public static Integer getFiles(String downloadLink) {
+		if(!downloadLink.equals("NoData")) {
+			JSONObject jsonBody = new JSONObject();
+			jsonBody.put("path", "/"+downloadLink+"/");
+			Response responseT = RestAssured.given().baseUri(TWXConnectorPropeties.getBaseUrl())
+					.basePath(downloadLink.substring(10))
+					.headers(TWXConnectorPropeties.getClariaHeaders()).body(jsonBody.toJSONString()).get();
+			int statusCode=responseT.getStatusCode();
+//			System.out.println("status code = " + statusCode);
+			System.out.println("return content = " + responseT.asString());
+			return statusCode;
+		}else {
+			return 0;//if status code = 0, then no data exist, or no link exist
+		}
+
+	}
+	
+	//if status code = 0, then no data exist, or no link exist
+	public static int getSettingResponseFileCombination_SettingFile(String deviceName) {
+		int statusCode=getFiles(getDownLoadLinkFromFileListingWithLinks(getFileRepositoryPath_SettingFile(deviceName)));
+		System.out.println("status code = " + statusCode);
 		return statusCode;
 	}
 	
-	public static int getSettingResponseFileCombination(String deviceName) {
-		int statusCode=getSettingResponseFile(getDownLoadLinkFromFileListingWithLinks(getFileRepositoryPath(deviceName)));
+	//if status code = 0, then no data exist, or no link exist
+	public static int getSettingResponseFileCombination_backup_SettingFile(String deviceName) {
+		int statusCode=getFiles(getDownLoadLinkFromFileListingWithLinks_In_BackupFile(getFileRepositoryPath_SettingFile(deviceName)));
+		System.out.println("status code = " + statusCode);
+		return statusCode;
+	}
+	
+	//if status code = 0, then no data exist, or no link exist
+	public static int getSettingResponseFileCombination_TreatmentFile(String deviceName) {
+		int statusCode=getFiles(getDownLoadLinkFromFileListingWithLinks(getFileRepositoryPath_TreatmentFile(deviceName)));
+		System.out.println("status code = " + statusCode);
+		return statusCode;
+	}
+	
+	//if status code = 0, then no data exist, or no link exist
+	public static int getSettingResponseFileCombination_backup_TreatmentFile(String deviceName) {
+		int statusCode=getFiles(getDownLoadLinkFromFileListingWithLinks_In_BackupFile(getFileRepositoryPath_TreatmentFile(deviceName)));
 		System.out.println("status code = " + statusCode);
 		return statusCode;
 	}
@@ -232,7 +332,7 @@ public class TWXServices {
 		Response responseT = RestAssured.given().baseUri(TWXConnectorPropeties.getBaseUrl())
 				.basePath("Things/TestThing1222/Services/descendQuery")
 				.headers(TWXConnectorPropeties.getClariaHeaders()).body(jsonBody.toJSONString()).post();
-//		System.out.println(responseT.asString());
+		System.out.println(responseT.asString());
 		return responseT;
 	}
 	
@@ -241,6 +341,16 @@ public class TWXServices {
 		String action=TWXResultGetter.getAction(getDescendQuery(deviceName));
 		System.out.println("action = "+action);
 		return action;
+	}
+	public static String getCategory(String deviceName) {
+		String category=TWXResultGetter.getCategory(getDescendQuery(deviceName));
+		System.out.println("category = "+category);
+		return category;
+	}
+	public static String getName(String deviceName) {
+		String name=TWXResultGetter.getName(getDescendQuery(deviceName));
+		System.out.println("name = "+name);
+		return name;
 	}
 	
 	public static String getAsset(String deviceName) {
@@ -254,6 +364,9 @@ public class TWXServices {
 		System.out.println("timestamp = "+action);
 		return action;
 	}
+	
+	
+	
 	
 	
 	
