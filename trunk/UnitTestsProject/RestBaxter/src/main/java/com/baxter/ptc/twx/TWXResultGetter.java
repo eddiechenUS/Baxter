@@ -69,7 +69,7 @@ public class TWXResultGetter {
 		String result = "";
 		JSONParser parser = new JSONParser();
 		try {
-			System.out.println("rs.getBody().asString() ="+rs.getBody().asString());
+			System.out.println("respnose from GetFileListingWithLinks"+rs.getBody().asString());
 			jOJ = (JSONObject) parser.parse(rs.getBody().asString());
 
 		} catch (ParseException e) {
@@ -418,7 +418,8 @@ public class TWXResultGetter {
 	
 	public static Boolean getSettingsResponseFileDetailsMatchName(Response res, String settingRequestFileName) {
 		JSONObject Q1 = null;
-		String settingResponseFileName = "SR".concat(settingRequestFileName.substring(1));
+		String settingResponseFileName = "SR".concat(settingRequestFileName.substring(2));
+		System.out.println("settingResponseFileName = "+settingResponseFileName);
 		try {
 
 			JSONParser parser = new JSONParser();
@@ -430,6 +431,8 @@ public class TWXResultGetter {
 				for (Object item : t12) {
 					JSONObject i = (JSONObject) item;
 					if (settingResponseFileName.equals((String) i.get("name"))) {
+						System.out.println("matched name, by getSettingsResponseFileDetailsMatchName");
+						System.out.println("settingResponseFileName ="+settingResponseFileName);
 						return true;
 					}
 					return false;
