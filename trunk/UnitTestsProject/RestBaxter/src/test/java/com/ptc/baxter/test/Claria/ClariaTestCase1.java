@@ -119,7 +119,7 @@ public class ClariaTestCase1 {
 		Assert.assertEquals(200,TWXServices.getSettingResponseFileCombination_backup_SettingFile(deviceName));//  valid path: Thing: Baxter.ClariaFileRepository/GetFileListingWithLinks, input =  /441/188/441188/SettingsResponse/Backup/
 	}
 	
-*/
+
 	
 
    
@@ -207,6 +207,32 @@ public class ClariaTestCase1 {
 				//
 				Assert.assertEquals(0,TWXServices.getSettingRequestFileCombination_SettingRequest(deviceName));
 				Assert.assertEquals(0,TWXServices.getSettingResponseFileCombination_SettingResponse(deviceName));
+			}
+			
+*/			
+			//settingFile request
+			String settingFileRequest_error = "X+Sv66UrYo2eRz3pCPf5od6QmIp09Y0qOPouYQroyfvqDcCSR7OH20pnFKeaJwf/M5qOQrZQ9Z6Ez7gawIbBq2W7vFx8ZFCzF0+ee4HgseBQxunovfSgCicy9T9fwy9kAjmwHgjc9GJ6c5XZ76RXMmcEMyEBh/YF54e0d5fHanbOsSXjoVZLg2VlGAnHcAbrvuZG63XiDNI930pWr4zortPLw1Uw+ujppqUbSs3CO+EHzBgtHWwBWfuZvHzXMvh4Qu7/Qef1Da0UJ9gXtJjYs+6Of84WXOtWNkfQ9JF1C0CNII+DN7hkyWdsIpmLioib0tDuaTWDtJMLOI4yBfgAivQ4dYzyk5i7LX4cuBqnQyVJNuGAy5F6pgSKHdcZudhbrQam53Sh9OSuNiKhgy8mULXGr92zXVs4DEkq61ECF4PDWkTfMtHP20RbP/EWtFa0zprGdXTjbcMDsLyqK7mWlw==";
+			String checksum2_error = "05B28882CCEF7C97E3B66520B835734D";
+			String FileName2_error = "SQ_C_1_1501001701.tar.gz.enc";
+			
+			//task 199
+			@org.junit.Test
+			public void Update_Old_Treatment_File() {
+				RestAssured.useRelaxedHTTPSValidation();
+				Long initialTime = (Long) new Date().getTime();
+				Integer serialNumber = 441177;
+				String deviceName = "Claria.".concat(serialNumber.toString());
+				//step 1 : upload old setting request file, file have correct but old file, so the erorr will be shown in audit log
+				Response res2=TWXServices.sendSettingsRequestFile(FileName2_error, checksum2_error, settingFileRequest_error, deviceName);
+				Assert.assertEquals(true, TWXResultGetter.ShowBoolean(res2, "result"));
+				//step 2 : still not delete in the main repo, 200 means exist the getFileWithLink
+				Assert.assertEquals(200,TWXServices.getSettingRequestFileCombination_SettingRequest(deviceName));// if no data, the status code will be 0, it is verified.
+				//step 3 : Check auditlog for old file reault 
+				Long currentTime = TWXServices.getTimeStamp(deviceName);
+				Assert.assertTrue(currentTime>initialTime);
+				Assert.assertEquals(deviceName,TWXServices.getAsset(deviceName));
+				Assert.assertEquals("Error",TWXServices.getCategory(deviceName));
+				Assert.assertEquals("ServiceError",TWXServices.getName(deviceName));
 			}
 
 			
