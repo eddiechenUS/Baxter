@@ -24,8 +24,6 @@ import io.restassured.response.Response;
 //list all services
 public class TWXServices {
 
-
-
 	public static Response setClariaProperty(String JSONString, String deviceName) {
 		RestAssured.useRelaxedHTTPSValidation();
 
@@ -42,8 +40,6 @@ public class TWXServices {
 		System.out.println("status code ="+responseT.getStatusCode());
 		System.out.println(responseT.asString());
 		return responseT;
-		
-
 	}
 
 	public static Response setClariaPropertyies(String JSONString, String deviceName) {
@@ -441,9 +437,6 @@ public class TWXServices {
 	}
 	
 	
-	
-	
-	
 	//work!  wait for N second
 	public static void pause(double seconds) {
 		try {
@@ -457,8 +450,5 @@ public class TWXServices {
 		pause(min*60);
 //		System.out.println("End time  ="+System.currentTimeMillis());
 	}
-	
-	
-	
 
 }
