@@ -196,6 +196,28 @@ public class TWXServices {
 	
 	
 	
+	public static String DeleteFile(String pathUnderBaxterClariaRepo) {//path: 441/177/441177/TreatmentResults
+		RestAssured.useRelaxedHTTPSValidation();
+		JSONObject jsonBody = new JSONObject();
+		jsonBody.put("path", pathUnderBaxterClariaRepo);
+		Response responseT = RestAssured.given().baseUri(TWXConnectorPropeties.getBaseUrl())
+				.basePath("Things/Baxter.ClariaFileRepository/Services/DeleteFile")
+				.headers(TWXConnectorPropeties.getClariaHeaders()).body(jsonBody.toJSONString()).post();
+		Integer statusCode = responseT.getStatusCode();
+//		System.out.println("status code"+statusCode);
+		if(!statusCode.equals(200))
+			{return "No exist";}else 
+			{
+				return "delete ok";//delete successfully
+			}
+		
+		
+		//		System.out.println("response = "+responseT.asString());
+//		String path=TWXResultGetter.ShowResultValue(responseT);
+//		System.out.println("path = "+path);
+	}
+	
+	
 	//after save/upload setting file
 	//get setting file step 1
 	//service:   - input : TreatmentResults return 441/177/441177/TreatmentResults or input : SettingsRequest return 441/177/441177/SettingsRequest
@@ -344,14 +366,14 @@ public class TWXServices {
 	}
 	
 	//if status code = 0, then no data exist, or no link exist
-	public static int getSettingResponseFileCombination_TreatmentFile(String deviceName) {
+	public static int getTreatmentFileFileCombination_TreatmentFile(String deviceName) {
 		int statusCode=getFiles(getDownLoadLinkFromFileListingWithLinks(getFileRepositoryPath_TreatmentFile(deviceName)));
 		System.out.println("status code = " + statusCode);
 		return statusCode;
 	}
 	
 	//if status code = 0, then no data exist, or no link exist
-	public static int getSettingResponseFileCombination_backup_TreatmentFile(String deviceName) {
+	public static int getTreatmentFileCombination_backup_TreatmentFile(String deviceName) {
 		int statusCode=getFiles(getDownLoadLinkFromFileListingWithLinks_In_BackupFile(getFileRepositoryPath_TreatmentFile(deviceName)));
 		System.out.println("status code = " + statusCode);
 		return statusCode;
@@ -369,11 +391,23 @@ public class TWXServices {
 	
 	
 	public static Response getDescendQuery(String deviceName) {
+		RestAssured.useRelaxedHTTPSValidation();
 		JSONObject jsonBody = new JSONObject();
 		Response responseT = RestAssured.given().baseUri(TWXConnectorPropeties.getBaseUrl())
-				.basePath("Things/TestThing1222/Services/descendQuery")
+				.basePath("Things/TestThing1222/Services/descendQueryByAsset")
 				.headers(TWXConnectorPropeties.getClariaHeaders()).body(jsonBody.toJSONString()).post();
-		System.out.println(responseT.asString());
+		System.out.println("getDescendQuery"+responseT.asString());
+		return responseT;
+	}
+	
+	//
+	public static Response getDescendQuery_BaxterAuditLogDataTable(String deviceName) {
+		RestAssured.useRelaxedHTTPSValidation();
+		JSONObject jsonBody = new JSONObject();
+		Response responseT = RestAssured.given().baseUri(TWXConnectorPropeties.getBaseUrl())
+				.basePath("Things/TestThing1222/Services/descendQueryDataTable")
+				.headers(TWXConnectorPropeties.getClariaHeaders()).body(jsonBody.toJSONString()).post();
+		System.out.println("getDescendQuery_BaxterAuditLogDataTable"+responseT.asString());
 		return responseT;
 	}
 	
@@ -401,11 +435,10 @@ public class TWXServices {
 	}
 	
 	public static Long getTimeStamp(String deviceName) {
-		Long action=TWXResultGetter.getTimeStamp(getDescendQuery(deviceName));
-		System.out.println("timestamp = "+action);
-		return action;
+		Long timestamp=TWXResultGetter.getTimeStamp(getDescendQuery(deviceName));
+		System.out.println("timestamp = "+timestamp);
+		return timestamp;
 	}
-	
 	
 	
 	
