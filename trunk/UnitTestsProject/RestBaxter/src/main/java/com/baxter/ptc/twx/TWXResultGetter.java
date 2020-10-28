@@ -383,7 +383,7 @@ public class TWXResultGetter {
 			while (count != 0) {
 				for (Object item : t12) {
 					JSONObject i = (JSONObject) item;
-					result = (Long) i.get("timestamp");
+					result = (Long) i.get("log_timestamp");
 					return result;
 				}
 				count--;
