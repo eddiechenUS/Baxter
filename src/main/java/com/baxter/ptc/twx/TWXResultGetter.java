@@ -414,6 +414,27 @@ public class TWXResultGetter {
 		}
 		return result;
 	}
+	public static Boolean getClariaTreatmentFileBackup(Response res) {
+		JSONObject Q1 = null;
+		Boolean result = false;
+		Integer count = 1;
+		try {
+			
+			JSONParser parser = new JSONParser();
+			Q1 = (JSONObject) parser.parse(res.getBody().asString());
+			ArrayList t12 = (ArrayList) Q1.get("rows");
+			while (count != 0) {
+				for (Object item : t12) {
+					JSONObject i = (JSONObject) item;
+					result = (Boolean) i.get("ClariaTreatmentFileBackup");
+					return result;
+				}
+				count--;
+			}
+		} catch (ParseException e) {
+		}
+		return result;
+	}
 
 	
 	public static Boolean getSettingsResponseFileDetailsMatchName(Response res, String settingRequestFileName) {
@@ -443,5 +464,170 @@ public class TWXResultGetter {
 		}
 		return false;
 	}
+	
+	//retry query getter functions====================================================
+
+	public static Long getDataTableTimeStamp(Response res) {
+		JSONObject Q1 = null;
+		Long result = 0L;
+		Integer count = 1;
+		try {
+
+			JSONParser parser = new JSONParser();
+			Q1 = (JSONObject) parser.parse(res.getBody().asString());
+			ArrayList t12 = (ArrayList) Q1.get("rows");
+			while (count != 0) {
+				for (Object item : t12) {
+					JSONObject i = (JSONObject) item;
+					result = (Long) i.get("timestamp");
+					return result;
+				}
+				count--;
+			}
+		} catch (ParseException e) {
+		}
+		return result;
+	}
+	
+	//Column Name = timestamp, attempt, deviceName, repository, path
+	//attempt
+	public static Long getDataTableAttempt(Response res) {
+		JSONObject Q1 = null;
+		Long result = 0L;
+		Integer count = 1;
+		try {
+
+			JSONParser parser = new JSONParser();
+			Q1 = (JSONObject) parser.parse(res.getBody().asString());
+			ArrayList t12 = (ArrayList) Q1.get("rows");
+			while (count != 0) {
+				for (Object item : t12) {
+					JSONObject i = (JSONObject) item;
+					result = (Long) i.get("attempt");
+					return result;
+				}
+				count--;
+			}
+		} catch (ParseException e) {
+		}
+		return result;
+	}
+	
+	//deviceName
+	public static String getDataTableDeviceName(Response res) {
+		JSONObject Q1 = null;
+		String result = "";
+		Integer count = 1;
+		try {
+			
+			JSONParser parser = new JSONParser();
+			Q1 = (JSONObject) parser.parse(res.getBody().asString());
+			ArrayList t12 = (ArrayList) Q1.get("rows");
+			while (count != 0) {
+				for (Object item : t12) {
+					JSONObject i = (JSONObject) item;
+					result = (String) i.get("deviceName");
+					return result;
+				}
+				count--;
+			}
+		} catch (ParseException e) {
+		}
+		return result;
+	}
+	
+	//Path
+	public static String getDataTablePath(Response res) {
+		JSONObject Q1 = null;
+		String result = "";
+		Integer count = 1;
+		try {
+			
+			JSONParser parser = new JSONParser();
+			Q1 = (JSONObject) parser.parse(res.getBody().asString());
+			ArrayList t12 = (ArrayList) Q1.get("rows");
+			while (count != 0) {
+				for (Object item : t12) {
+					JSONObject i = (JSONObject) item;
+					result = (String) i.get("path");
+					return result;
+				}
+				count--;
+			}
+		} catch (ParseException e) {
+		}
+		return result;
+	}
+	
+	public static String InfoTableStringGetter(Response res, String FieldName) {
+		JSONObject Q1 = null;
+		String result = "";
+		Integer count = 1;
+		try {
+			
+			JSONParser parser = new JSONParser();
+			Q1 = (JSONObject) parser.parse(res.getBody().asString());
+			ArrayList t12 = (ArrayList) Q1.get("rows");
+			while (count != 0) {
+				for (Object item : t12) {
+					JSONObject i = (JSONObject) item;
+					result = (String) i.get(FieldName);
+					return result;
+				}
+				count--;
+			}
+		} catch (ParseException e) {
+		}
+		return result;
+	}
+	
+	//For counting or timestamp
+	public static Long InfoTableLongGetter(Response res, String FieldName) {
+		JSONObject Q1 = null;
+		Long result = 0L;
+		Integer count = 1;
+		try {
+			
+			JSONParser parser = new JSONParser();
+			Q1 = (JSONObject) parser.parse(res.getBody().asString());
+			ArrayList t12 = (ArrayList) Q1.get("rows");
+			while (count != 0) {
+				for (Object item : t12) {
+					JSONObject i = (JSONObject) item;
+					result = (Long) i.get(FieldName);
+					return result;
+				}
+				count--;
+			}
+		} catch (ParseException e) {
+		}
+		return result;
+	}
+	
+	public static Integer InfoTableIntegerGetter(Response res, String FieldName) {
+		JSONObject Q1 = null;
+		Integer result = 0;
+		Integer count = 1;
+		try {
+			
+			JSONParser parser = new JSONParser();
+			Q1 = (JSONObject) parser.parse(res.getBody().asString());
+			ArrayList t12 = (ArrayList) Q1.get("rows");
+			while (count != 0) {
+				for (Object item : t12) {
+					JSONObject i = (JSONObject) item;
+					result = (Integer) i.get(FieldName);
+					return result;
+				}
+				count--;
+			}
+		} catch (ParseException e) {
+		}
+		return result;
+	}
+	
+	
+	
+	
 
 }
