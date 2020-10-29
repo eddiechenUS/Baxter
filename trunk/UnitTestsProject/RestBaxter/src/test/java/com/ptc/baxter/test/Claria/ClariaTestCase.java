@@ -462,11 +462,29 @@ public class ClariaTestCase {
 		Assert.assertEquals(200, res.getStatusCode());
 	}
 
-	
+	@org.junit.Test
+	public void testIsReporting() {
+		RestAssured.useRelaxedHTTPSValidation();
+		Integer serialNumber = 441177;
+		String singlePropertyName = "LastRestCall";
+		Date d = new Date();
+		long FirstsinglePropertyValue = d.getTime();
+		String testString = "{\"" + singlePropertyName + "\":\"" + FirstsinglePropertyValue + "\"}";
+		String deviceName = "Claria.".concat(serialNumber.toString());
+		TWXServices.setClariaProperty(testString, deviceName);
+		Response res = TWXServices.getClariaProperty("isReporting", deviceName);
+		// check isReporting property if it's true
+		Assert.assertEquals(true, TWXResultGetter.ShowBoolean(res, "isReporting"));
+		// wait for 5 mins
+		TWXServices.Pause_N_Minute(5);
+		// check isReporting property if it's false
+		Response res2 = TWXServices.getClariaProperty("isReporting", deviceName);
+		Assert.assertEquals(false, TWXResultGetter.ShowBoolean(res2, "isReporting"));
+	}
 	
 /*	
 	
-	// task 178
+	// task 178   , not finished yet
 	@org.junit.Test
 	public void Update_Device() {
 		RestAssured.useRelaxedHTTPSValidation();
@@ -522,25 +540,7 @@ public class ClariaTestCase {
 		// how? the properties are String
 	}
 
-	@org.junit.Test
-	public void testIsReporting() {
-		RestAssured.useRelaxedHTTPSValidation();
-		Integer serialNumber = 441177;
-		String singlePropertyName = "LastRestCall";
-		Date d = new Date();
-		long FirstsinglePropertyValue = d.getTime();
-		String testString = "{\"" + singlePropertyName + "\":\"" + FirstsinglePropertyValue + "\"}";
-		String deviceName = "Claria.".concat(serialNumber.toString());
-		TWXServices.setClariaProperty(testString, deviceName);
-		Response res = TWXServices.getClariaProperty("isReporting", deviceName);
-		// check isReporting property if it's true
-		Assert.assertEquals(true, TWXResultGetter.ShowBoolean(res, "isReporting"));
-		// wait for 5 mins
-		TWXServices.Pause_N_Minute(5);
-		// check isReporting property if it's false
-		Response res2 = TWXServices.getClariaProperty("isReporting", deviceName);
-		Assert.assertEquals(false, TWXResultGetter.ShowBoolean(res2, "isReporting"));
-	}
+
 	*/
 
 }
