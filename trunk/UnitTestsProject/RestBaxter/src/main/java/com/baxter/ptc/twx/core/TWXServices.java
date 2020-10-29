@@ -74,6 +74,15 @@ public class TWXServices {
 		System.out.println(responseT.asString());
 		return result;
 	}
+	public static Boolean getBaxterFileBackupConfigurator_ClariaTreatmentFileBackup(String propertyName) {
+		JSONObject jsonBody = new JSONObject();
+		Response responseT = RestAssured.given().baseUri(TWXConnectorPropeties.getBaseUrl())
+				.basePath("Things/Baxter.FileBackupConfigurator/Properties/" + propertyName)
+				.headers(TWXConnectorPropeties.getClariaHeaders()).body(jsonBody.toJSONString()).get();
+		Boolean result = TWXResultGetter.getClariaTreatmentFileBackup(responseT);
+		System.out.println(responseT.asString());
+		return result;
+	}
 
 	public static Response getSettingsresponseFileDetails(String deviceName) {
 		JSONObject jsonBody = new JSONObject();
@@ -191,26 +200,26 @@ public class TWXServices {
 	}
 	
 	
-	
-	public static String DeleteFile(String pathUnderBaxterClariaRepo) {//path: 441/177/441177/TreatmentResults
+	// valid input 441/177/441177/TreatmentResults
+	// valid input 441/177/441177/SettingsRequest
+	// valid input 441/177/441177/SettingsResponse
+	public static String DeleteFolder(String pathUnderBaxterClariaRepo) {//path: 441/177/441177/TreatmentResults
 		RestAssured.useRelaxedHTTPSValidation();
 		JSONObject jsonBody = new JSONObject();
 		jsonBody.put("path", pathUnderBaxterClariaRepo);
 		Response responseT = RestAssured.given().baseUri(TWXConnectorPropeties.getBaseUrl())
-				.basePath("Things/Baxter.ClariaFileRepository/Services/DeleteFile")
+				.basePath("Things/Baxter.ClariaFileRepository/Services/DeleteFolder")
 				.headers(TWXConnectorPropeties.getClariaHeaders()).body(jsonBody.toJSONString()).post();
 		Integer statusCode = responseT.getStatusCode();
 //		System.out.println("status code"+statusCode);
-		if(!statusCode.equals(200))
-			{return "No exist";}else 
-			{
-				return "delete ok";//delete successfully
-			}
-		
-		
-		//		System.out.println("response = "+responseT.asString());
-//		String path=TWXResultGetter.ShowResultValue(responseT);
-//		System.out.println("path = "+path);
+		if(!statusCode.equals(200)){
+			System.out.println(statusCode);
+			return "Folder No exist";
+		}
+		else{ 
+			System.out.println(statusCode);
+			return "delete ok";//delete successfully
+		}
 	}
 	
 	
@@ -370,6 +379,7 @@ public class TWXServices {
 	
 	//if status code = 0, then no data exist, or no link exist
 	public static int getTreatmentFileCombination_backup_TreatmentFile(String deviceName) {
+		RestAssured.useRelaxedHTTPSValidation();
 		int statusCode=getFiles(getDownLoadLinkFromFileListingWithLinks_In_BackupFile(getFileRepositoryPath_TreatmentFile(deviceName)));
 		System.out.println("status code = " + statusCode);
 		return statusCode;
@@ -444,11 +454,154 @@ public class TWXServices {
 		} catch (InterruptedException e) {
 		}
 	}
+	
+	
+	//Execute service Claria.441177/Services/GetFirmwarePackageSize
+	public static Response getFirmwarePackageSize(String deviceName) {
+		RestAssured.useRelaxedHTTPSValidation();
+		JSONObject jsonBody = new JSONObject();
+		Response responseT = RestAssured.given().baseUri(TWXConnectorPropeties.getBaseUrl())
+				.basePath("Things/"+deviceName+"/Services/GetFirmwarePackageSize")
+				.headers(TWXConnectorPropeties.getClariaHeaders()).body(jsonBody.toJSONString()).post();
+		System.out.println("GetFirmwarePackageSize infotable");
+		System.out.println(responseT.asString());
+		return responseT;
+	}
+	
 
 	public static void Pause_N_Minute(double min) {
 //		System.out.println("Start time="+System.currentTimeMillis());
 		pause(min*60);
 //		System.out.println("End time  ="+System.currentTimeMillis());
 	}
-
+	
+	
+	public static String returnClariaDeviceFilePath(String deviceName) {
+//		System.out.println("Claria.441177".substring(0, 7)); //Claria
+//		System.out.println("Claria.441177".substring(7));    //441177
+//		System.out.println("Claria.441177".substring(7,10)); //441
+//		System.out.println("Claria.441177".substring(10,13));//177
+		String SerialNumber = deviceName.substring(7);    //441177
+		String FirstName =deviceName.substring(7,10); //441
+		String SecName = deviceName.substring(10,13);//177
+		String path = FirstName+"/"+SecName+"/"+SerialNumber+"/";
+		System.out.println(path);//  show: 441/177/441177/
+		return path;
+	}
+	
+	public static void ClearFolderOperation(String deviceName) {
+		String path = TWXServices.returnClariaDeviceFilePath(deviceName);
+		TWXServices.DeleteFolder(path + "TreatmentResults");
+		TWXServices.DeleteFolder(path + "SettingsRequest");
+		TWXServices.DeleteFolder(path + "SettingsResponse");
+	}
+	
+	public static String returnTreatmentFilePath(String deviceName) {
+		return returnClariaDeviceFilePath(deviceName)+"TreatmentResults";
+	}
+	
+	public static String returnSettingsRequestFilePath(String deviceName) {
+		return returnClariaDeviceFilePath(deviceName)+"SettingsRequest";
+	}
+	
+	public static String returnSettingsResponseFilePath(String deviceName) {
+		return returnClariaDeviceFilePath(deviceName)+"SettingsResponse";
+	}
+	
+	
+	//===============================Retry Test Case Services==========================================================
+	
+	//DataTableName = Baxter.UploadFailureDataTable, Baxter.UploadSuccessDataTable, Baxter.RetryDataTable
+	//Column Name = timestamp, attempt, deviceName, repository, path
+	//Use different Getter!
+	public static Response getDataTableColumnDataByTimeDescend(String DataTableName) {//descend: Latest data on the top of the infoTable
+		RestAssured.useRelaxedHTTPSValidation();
+		String JSONString ="{\"values\":{\"dataShape\":{\"fieldDefinitions\":{\"path\":{\"name\":\"path\",\"aspects\":{\"isPrimaryKey\":true},\"description\":\"\",\"baseType\":\"STRING\",\"ordinal\":2},\"fileName\":{\"name\":\"fileName\",\"aspects\":{\"isPrimaryKey\":false},\"description\":\"\",\"baseType\":\"STRING\",\"ordinal\":5},\"repository\":{\"name\":\"repository\",\"aspects\":{\"isPrimaryKey\":false},\"description\":\"\",\"baseType\":\"THINGNAME\",\"ordinal\":1},\"attempt\":{\"name\":\"attempt\",\"aspects\":{\"isPrimaryKey\":false},\"description\":\"\",\"baseType\":\"INTEGER\",\"ordinal\":3},\"deviceName\":{\"name\":\"deviceName\",\"aspects\":{\"isPrimaryKey\":false},\"description\":\"\",\"baseType\":\"STRING\",\"ordinal\":4}}},\"rows\":[]},\"maxItems\":50,\"tags\":[]\"}}";
+		Response responseT = RestAssured.given().baseUri(TWXConnectorPropeties.getBaseUrl())
+				.basePath("Things/Baxter.UploadFailureDataTable/Services/QueryDataTableEntriesByTimeDescend")
+				.headers(TWXConnectorPropeties.getClariaHeaders()).body(JSONString).post();
+		System.out.println("DataTableName = "+DataTableName);
+		System.out.println(responseT.asString());
+		return responseT;
+	}
+	
+	
+	public static String DataTableByDeviceName(Response responseT) {//descend: Latest data on the top of the infoTable
+		String result ="";
+			String DeviceName=TWXResultGetter.getDataTableDeviceName(responseT);
+			System.out.println("DeviceName = "+DeviceName);
+			result = DeviceName;
+			return result;
+	}
+	public static String DataTableByPath(Response responseT) {//descend: Latest data on the top of the infoTable
+		String result ="";
+		String Path=TWXResultGetter.getDataTablePath(responseT);
+		System.out.println("Path = "+Path);
+		result = Path;
+		return result;
+	}
+	public static Long DataTableByAttempt(Response responseT) {//descend: Latest data on the top of the infoTable
+		Long result  = 0L;
+		Long Attempt=TWXResultGetter.getDataTableAttempt(responseT);
+		System.out.println("Attempt = "+Attempt);
+		result = Attempt;
+		return result;
+	}
+	public static Long DataTableByTimeStamp(Response responseT) {//descend: Latest data on the top of the infoTable
+		Long result  = 0L;
+		Long timestamp=TWXResultGetter.getDataTableTimeStamp(responseT);
+		System.out.println("timestamp = "+timestamp);
+		result = timestamp;
+		return result;
+	}
+	
+	
+	public static Response AddOrUpdateRetryDataTableEntries(String deviceName, String TreatmentFileName) {//descend: Latest data on the top of the infoTable
+		RestAssured.useRelaxedHTTPSValidation();
+		String path=returnTreatmentFilePath(deviceName)+"/"+TreatmentFileName;
+		String JSONString ="{\"values\":{\"dataShape\":{\"fieldDefinitions\":{\"repository\":{\"name\":\"repository\",\"description\":\"\",\"baseType\":\"THINGNAME\",\"ordinal\":1,\"alias\":\"_6\",\"aspects\":{\"isPrimaryKey\":false}},\"path\":{\"name\":\"path\",\"description\":\"\",\"baseType\":\"STRING\",\"ordinal\":2,\"alias\":\"_7\",\"aspects\":{\"isPrimaryKey\":true}},\"attempt\":{\"name\":\"attempt\",\"description\":\"\",\"baseType\":\"INTEGER\",\"ordinal\":3,\"alias\":\"_8\",\"aspects\":{\"isPrimaryKey\":false}},\"deviceName\":{\"name\":\"deviceName\",\"description\":\"\",\"baseType\":\"STRING\",\"ordinal\":4,\"alias\":\"_9\",\"aspects\":{\"isPrimaryKey\":false}},\"fileName\":{\"name\":\"fileName\",\"description\":\"\",\"baseType\":\"STRING\",\"ordinal\":5,\"alias\":\"_10\",\"aspects\":{\"isPrimaryKey\":false}}}},\"rows\":[{\"repository\":\"Baxter.ClariaFileRepository\",\"path\":\""+path+"\",\"attempt\":\"0\",\"deviceName\":\""+deviceName+"\",\"fileName\":\""+TreatmentFileName+"\",\"_isSelected\":false}],\"name\":\"\",\"description\":\"\"}}";
+		Response responseT = RestAssured.given().baseUri(TWXConnectorPropeties.getBaseUrl())
+				.basePath("Things/Baxter.RetryDataTable/Services/AddOrUpdateDataTableEntries")
+				.headers(TWXConnectorPropeties.getClariaHeaders()).body(JSONString).post();
+		System.out.println("AddOrUpdate status code ="+responseT.getStatusCode());
+		System.out.println("details = "+responseT.asString());
+		return responseT;
+	}
+	
+	String error_treatment_file_path = "441/177/441177/TreatmentResults/T_2019-08-21-15-34-48_C_2_1501001701_00001.tar.gz.enc";
+	String error_treatment_file_BLOBString ="2TbnPevxsUFCY1K1/VMwYMKNJXpQcC/j/6jF0oqKTbqh8hAlITkwjVNHrkeS19K+f4tsAh9ifLp8R6yzZbB1u9OK3udC+JX1GiPeHFV4RhY+3NfRYktMSJHbWUmyRWRiy795PYBCkC7bk1z59sfBciBsjJ3uvAfdolwU7YCZ0HJA3KZrN1a9epWmzFndKId5wEABucHK93T/So5vkuuVM4QQMJ9KiT+A4zQ8kMdrn9ZjuOi2HX8JpHJpYR+R4p2UFRb+tbHdKK7bB+7MGr05l0+5E3cJeCOoQxA2ScabgLu1Qon0q9Pqg4AG/uINg88wFy1R3vZWcPDTZtudPdWOR6CpIvEWaY+DimXu8t5jlQSX7pCDlO67N3AQtAtuOe2XBfVQbKNWSu9sglnqyTSGl4Fn2otZjyjsAoMPJbNdS2zNKISepmRt3wbPUiSheh21ZQVyI+hVyGOkjtgAgrDH8daMt6SBEoyDTPeF2JqpTLJDTK/Oa0YuHn2G+TPooxY/2BiSrV8Z1DCnoDLDjNrZS0rCQEh8nDgCB9vWNSO4bUgDHlHzjsjPsgRgxehYdiQgRbNBEa7V0QrKHTaUr6BUBZIqgsxaryn/3ED0emrTqDo1kdThTH/V6oJHa6bjyagL8fNDIiPQbsVTnTLJklLSEiaMBwrDmIS6jDB+Icucp4aw7yI2KeaYVvZn8NGQpgyq/qNO7dm4GmadERTcDsg1IbWJAOB05OvdaGQLIQf/8PVuikFjlAvu9Wq8WF/hXEj8iipueONiF5ggsnipN7DUCeeHkKk4+2dqmqlocxaaHcKPM38H794Fi+Aucei5LOaoifN74Sw1iGgj4A2WnxIGf6ssaHVrVxGFRwFy+gLt6PtIZq7Cs6tUizRM7uTc61C+Ihi+JbRWvOM9wTAvJGoWVp8dJpjFeAI5t0aGPRGCGDU0r7kCjZmyllHj1Yhi68fjfgYAnxElxjQNpb+SYEQ0DCTUXQZmynbaZJMWbam9rXL/t/B+n26edhv2zvhIXhIzMMIMTuBlrupcp7PogcjNMnDbAx+wZWuWLUdvn6d+mY/euDHX4YKlErhJesHAj0EOsVzOAHbY/XKiU+SWH6Im1tGLLFsXX42sNi0XTW8YLJ3WUIMdqRQymZTtGnBafufqdp3gDtsslYYZshnWJ48PtwPtg8UfvjemVGOVPAFZRJO2BwdhXubJOEwbCORuslN3xdheEPug449AYjrbU1EtZstkPGih9A2UwBsodjMO7/RUVsUAsboFxJ6uhzc6j3wNhq7YT6y+asvtMFqAKzw8vY9tck5dI1rKVdQ8JlKXEWORGnvx6RC4+UfyPTlziT1NFxBMJMGq6upRxZhPYZS6cH5G3CNmO3GsS3nrMg0rb3imjUXpq+de/4uyhksyjHacP1nIzvbQ490+tZ2H3jZ/RyhDLa6n3l9/4SsBBZD6T44sy3P6ebsSEgPMXyR8+ZwRG8STRGRm8UzVwWl6MVGSfgy4BuA7l1QSOxBu4MHZtQdOqpMBZGcSqCMvkUA8FneVAWPbDlI17FOsUPWV8pIhYX/bJ+h8RiuB+VLobQpbJ2sB1QW6GswrfxFyC+wr8Dny1YHNx+awK/jF31Kd3ud/nQ==";
+	
+	public static Response ManualUploadTreatmentFileToRepo(String deviceName, String TreatmentFileName,String TreatmentFile_BLOB) {//descend: Latest data on the top of the infoTable
+		RestAssured.useRelaxedHTTPSValidation();
+		String path=returnTreatmentFilePath(deviceName)+"/"+TreatmentFileName;
+		JSONObject jsonBody = new JSONObject();
+		jsonBody.put("BLOB", TreatmentFile_BLOB);
+		jsonBody.put("path", path);
+		Response responseT = RestAssured.given().baseUri(TWXConnectorPropeties.getBaseUrl())
+				.basePath("Things/Baxter.ClariaFileRepository/Services/UploadService")
+				.headers(TWXConnectorPropeties.getClariaHeaders()).body(jsonBody.toJSONString()).post();
+		System.out.println("status code ="+responseT.getStatusCode());
+		return responseT;
+	}
+	
+	public static void DeleteRetryDataTableByKey_Data( String TreatmentFilePath) {//descend: Latest data on the top of the infoTable
+		RestAssured.useRelaxedHTTPSValidation();
+		JSONObject jsonBody = new JSONObject();
+		jsonBody.put("key", TreatmentFilePath);
+		Response responseT = RestAssured.given().baseUri(TWXConnectorPropeties.getBaseUrl())
+				.basePath("Things/Baxter.ClariaFileRepository/Services/DeleteDataTableEntryByKey")
+				.headers(TWXConnectorPropeties.getClariaHeaders()).body(jsonBody.toJSONString()).post();
+		System.out.println("status code ="+responseT.getStatusCode());
+	}
+	
+	public static void ClearFileManualUploadAddOrUpdateTreatmentFileToRetryDataTable_Combination(String deviceName, String TreatmentFile_BLOB, String TreatmentFileName) {//descend: Latest data on the top of the infoTable
+		RestAssured.useRelaxedHTTPSValidation();
+		ClearFolderOperation(deviceName);
+		String path=returnTreatmentFilePath(deviceName);
+		DeleteRetryDataTableByKey_Data(path);
+		ManualUploadTreatmentFileToRepo(deviceName,TreatmentFileName, TreatmentFile_BLOB);
+		AddOrUpdateRetryDataTableEntries(deviceName,TreatmentFileName);
+		System.out.println("Check Baxter.RetryDataTable now!");
+	}
+	
 }

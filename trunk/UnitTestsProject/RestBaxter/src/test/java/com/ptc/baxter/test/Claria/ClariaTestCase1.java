@@ -23,12 +23,7 @@ public class ClariaTestCase1 {
 	 *                 Assert.assertEquals(4, c); }
 	 */
 	
-
-
 /*	
-	
-	
-	
 	// task 165 :testRegisterClaria
 	@org.junit.Test
 	public void testRegisterDevice() {// completed
